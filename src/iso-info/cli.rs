@@ -37,6 +37,10 @@ pub struct Cli {
     #[command(flatten)]
     pub file: FileArg,
 
+    /// Do not use Joliet extensions
+    #[arg(long)]
+    pub no_joliet: bool,
+
     /// Check if the image uses Rock Ridge extensions by considering a maximum
     /// of FILE_COUNT files. Provide '0' to check all files.
     #[arg(short = 'r', long, value_name = "FILE_COUNT")]

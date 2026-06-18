@@ -41,7 +41,13 @@ fn main() -> Result<()> {
         "the cli logic must ensure that the file argument is provided either as a positional or as an option",
     );
 
-    let extensions = Iso9660Extensions::all();
+    let mut extensions = Iso9660Extensions::all();
+    if cli.no_joliet {
+        extensions -= Iso9660Extensions::JolietLevel1;
+        extensions -= Iso9660Extensions::JolietLevel2;
+        extensions -= Iso9660Extensions::JolietLevel3;
+    }
+
     let Some(iso) = Iso9660::builder(&file).extensions(extensions).build() else {
         bail!("error opening iso9660 image: {}", file.display());
     };
