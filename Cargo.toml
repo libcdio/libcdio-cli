@@ -12,3 +12,12 @@ anyhow = "1.0.102"
 clap = { version = "4.6.1", features = ["cargo", "derive"] }
 libcdio-rs = { path = "../libcdio-rs" }
 tracing-subscriber = "0.3.23"
+
+[[bin]]
+name = "iso-info"
+path = "src/iso-info/main.rs"
+required-features = ["iso-info"]
+
+[features]
+default = ["iso-info"]
+iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
