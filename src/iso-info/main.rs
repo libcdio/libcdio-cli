@@ -17,25 +17,58 @@
 
 mod cli;
 
-use anyhow::{Result, bail};
+use std::{io, path::Path};
+
+use anyhow::{Context, Result, bail};
 use clap::Parser;
 use libcdio_rs::{Iso9660, iso9660::Iso9660Extensions};
 
 use crate::cli::Cli;
 
+static LINE: &str = "__________________________________";
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     libcdio_cli::setup_logs(cli.debug);
+    let mut output: &mut dyn io::Write = if cli.quiet {
+        &mut io::sink()
+    } else {
+        &mut io::stdout()
+    };
 
     let file = cli.file.positional.or(cli.file.option).expect(
         "the cli logic must ensure that the file argument is provided either as a positional or as an option",
     );
 
     let extensions = Iso9660Extensions::all();
-    let Some(_iso) = Iso9660::builder(&file).extensions(extensions).build() else {
-        bail!("could not open ISO 9660 image");
+    let Some(iso) = Iso9660::builder(&file).extensions(extensions).build() else {
+        bail!("error opening iso9660 image: {}", file.display());
     };
+
+    print_iso9660_metadata(&iso, &file, &mut output)
+        .context("io error while printing iso9660 metadata")?;
+
+    Ok(())
+}
+
+fn print_iso9660_metadata(
+    iso: &Iso9660,
+    path: &Path,
+    mut out: impl io::Write,
+) -> Result<(), io::Error> {
+    writeln!(out, "{LINE}")?;
+    writeln!(out, "ISO 9660 image: {}", path.display())?;
+    let mut write_if_some = |key, val| {
+        let Some(val) = val else { return Ok(()) };
+        writeln!(out, "{key} : {val}")
+    };
+    write_if_some("Application", iso.application())?;
+    write_if_some("Preparer   ", iso.data_preparer())?;
+    write_if_some("Publisher  ", iso.publisher())?;
+    write_if_some("System     ", iso.system())?;
+    write_if_some("Volume     ", iso.volume())?;
+    write_if_some("Volume Set ", iso.volume_set())?;
 
     Ok(())
 }
