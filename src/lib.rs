@@ -15,27 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
-mod cli;
+//! Shared code for libcdio-cli
 
-use anyhow::{Result, bail};
-use clap::Parser;
-use libcdio_rs::{Iso9660, iso9660::Iso9660Extensions};
+#![doc(hidden)]
 
-use crate::cli::Cli;
+use tracing_subscriber::filter::LevelFilter;
 
-fn main() -> Result<()> {
-    let cli = Cli::parse();
-
-    libcdio_cli::setup_logs(cli.debug);
-
-    let file = cli.file.positional.or(cli.file.option).expect(
-        "the cli logic must ensure that the file argument is provided either as a positional or as an option",
-    );
-
-    let extensions = Iso9660Extensions::all();
-    let Some(_iso) = Iso9660::builder(&file).extensions(extensions).build() else {
-        bail!("could not open ISO 9660 image");
+pub fn setup_logs(level: u8) {
+    let level = match level {
+        1 => LevelFilter::ERROR,
+        2 => LevelFilter::WARN,
+        3 => LevelFilter::INFO,
+        4 => LevelFilter::DEBUG,
+        _ => unreachable!("the cli logic must ensure that the level is within 1..=4"),
     };
 
-    Ok(())
+    tracing_subscriber::fmt().with_max_level(level).init();
 }
