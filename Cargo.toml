@@ -22,3 +22,6 @@ required-features = ["iso-info"]
 [features]
 default = ["iso-info"]
 iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
+
+[dev-dependencies]
+assert_cmd = { version = "2.2.2", features = ["color"] }
