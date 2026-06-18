@@ -49,6 +49,12 @@ fn main() -> Result<()> {
     print_iso9660_metadata(&iso, &file, &mut output)
         .context("io error while printing iso9660 metadata")?;
 
+    if cli.show_rock_ridge.is_some() {
+        let file_limit = cli.show_rock_ridge.filter(|file_limit| *file_limit != 0);
+        print_rock_ridge(&iso, file_limit, &mut output)
+            .context("io error while printing rock ridge status")?;
+    }
+
     Ok(())
 }
 
@@ -71,4 +77,17 @@ fn print_iso9660_metadata(
     write_if_some("Volume Set ", iso.volume_set())?;
 
     Ok(())
+}
+
+fn print_rock_ridge(
+    iso: &Iso9660,
+    file_limit: Option<u64>,
+    mut out: impl io::Write,
+) -> Result<(), io::Error> {
+    let status = match iso.have_rock_ridge(file_limit) {
+        Some(true) => "yes",
+        Some(false) => "no",
+        None => "possibly not",
+    };
+    writeln!(out, "Rock Ridge  : {}", status)
 }
