@@ -26,7 +26,7 @@ use std::{
 use anyhow::{Context, Result, bail};
 use clap::Parser;
 use libcdio_rs::{
-    Iso9660,
+    Iso9660, Udf,
     iso9660::{Iso9660Extensions, xa::XaFileAttributes},
 };
 use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
@@ -58,24 +58,28 @@ fn main() -> Result<()> {
         extensions -= Iso9660Extensions::JolietLevel3;
     }
 
-    let Some(iso) = Iso9660::builder(&file).extensions(extensions).build() else {
+    if let Some(iso) = Iso9660::builder(&file).extensions(extensions).build() {
+        print_iso9660_metadata(&iso, &file, &mut output)
+            .context("io error while printing iso9660 metadata")?;
+
+        if cli.show_rock_ridge.is_some() {
+            let file_limit = cli.show_rock_ridge.filter(|file_limit| *file_limit != 0);
+            print_rock_ridge(&iso, file_limit, &mut output)
+                .context("io error while printing rock ridge status")?;
+        }
+
+        print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
+
+        if cli.iso9660 {
+            print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
+                .context("error printing iso9660 contents")?;
+        }
+    } else if !cli.udf {
         bail!("error opening iso9660 image: {}", file.display());
     };
 
-    print_iso9660_metadata(&iso, &file, &mut output)
-        .context("io error while printing iso9660 metadata")?;
-
-    if cli.show_rock_ridge.is_some() {
-        let file_limit = cli.show_rock_ridge.filter(|file_limit| *file_limit != 0);
-        print_rock_ridge(&iso, file_limit, &mut output)
-            .context("io error while printing rock ridge status")?;
-    }
-
-    print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
-
-    if cli.iso9660 {
-        print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
-            .context("error printing iso9660 contents")?;
+    if cli.udf {
+        print_udf_contents(&file, &mut output)?;
     }
 
     Ok(())
@@ -245,6 +249,58 @@ fn xa_file_mode_str(attr: XaFileAttributes) -> String {
     has_attr(XaFileAttributes::WorldRead, 'r');
 
     mode_str
+}
+
+/// Outputs the file contents of the UDF image in an ls-like listing format.
+fn print_udf_contents(path: &Path, out: &mut dyn io::Write) -> Result<()> {
+    let udf =
+        Udf::new(path).with_context(|| format!("could not open udf image: {}", path.display()))?;
+
+    let root = udf
+        .root()
+        .with_context(|| format!("could not find root in udf image: {}", path.display()))?;
+    let mut dirs = VecDeque::new();
+    dirs.push_back((root, PathBuf::from("/")));
+
+    while let Some((dir, dir_path)) = dirs.pop_front() {
+        writeln!(out, "{}:", dir_path.display())?;
+        let mut next_entry = dir.next();
+
+        while let Some(entry) = next_entry {
+            let filename = entry
+                .filename()
+                .with_context(|| format!("could not get filename at: {}", path.display()))?;
+            let file_path = dir_path.join(filename);
+
+            let local = UtcOffset::current_local_offset()
+                .context("could not get current time offset from system")?;
+            let modify_time = entry
+                .modify_time()
+                .with_context(|| format!("could not get timestamp: {}", file_path.display()))?
+                .to_offset(local)
+                .format(DATE_FMT)
+                .with_context(|| format!("could not format timestamp: {}", file_path.display()))?;
+            write!(out, " ")?;
+            write!(out, " {}", entry.mode())?;
+            write!(out, " {}", entry.uid)?;
+            write!(out, " {}", entry.gid)?;
+            write!(out, " {:3}", entry.link_count())?;
+            write!(out, " {:9}", entry.file_length())?;
+            write!(out, " {}", modify_time)?;
+            write!(out, " {}", filename)?;
+            writeln!(out)?;
+
+            if let Some(subdir) = entry.open_dir() {
+                // .join("") adds a trailing slash
+                dirs.push_back((subdir, file_path.join("")));
+            }
+            next_entry = entry.next();
+        }
+
+        writeln!(out)?;
+    }
+
+    Ok(())
 }
 
 fn print_joliet_level(iso: &Iso9660, mut out: impl io::Write) -> Result<(), io::Error> {

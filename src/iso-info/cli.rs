@@ -38,7 +38,7 @@ pub struct Cli {
     pub file: FileArg,
 
     /// Show contents of ISO9660 image in long listing format
-    #[arg(short = 'l', long)]
+    #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
 
     /// Do not use Joliet extensions
@@ -61,6 +61,10 @@ pub struct Cli {
     /// Produce only error outputs.
     #[arg(short, long)]
     pub quiet: bool,
+
+    /// Show contents of UDF image in long listing format
+    #[arg(short = 'U', long, group = "listing")]
+    pub udf: bool,
 }
 
 #[derive(Args)]
