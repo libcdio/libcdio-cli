@@ -61,6 +61,8 @@ fn main() -> Result<()> {
             .context("io error while printing rock ridge status")?;
     }
 
+    print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
+
     Ok(())
 }
 
@@ -96,4 +98,12 @@ fn print_rock_ridge(
         None => "possibly not",
     };
     writeln!(out, "Rock Ridge  : {}", status)
+}
+
+fn print_joliet_level(iso: &Iso9660, mut out: impl io::Write) -> Result<(), io::Error> {
+    let Some(joliet_level) = iso.joliet_level() else {
+        return writeln!(out, "No Joliet extensions");
+    };
+
+    writeln!(out, "Joliet Level: {}", u8::from(joliet_level))
 }
