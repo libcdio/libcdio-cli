@@ -36,6 +36,10 @@ pub struct Cli {
     /// The file argument as an option or a positional argument
     #[command(flatten)]
     pub file: FileArg,
+
+    /// Produce only error outputs.
+    #[arg(short, long)]
+    pub quiet: bool,
 }
 
 #[derive(Args)]
