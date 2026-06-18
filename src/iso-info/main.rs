@@ -17,14 +17,24 @@
 
 mod cli;
 
-use std::{io, path::Path};
+use std::{
+    collections::VecDeque,
+    io,
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use libcdio_rs::{Iso9660, iso9660::Iso9660Extensions};
+use libcdio_rs::{
+    Iso9660,
+    iso9660::{Iso9660Extensions, xa::XaFileAttributes},
+};
+use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
 
 use crate::cli::Cli;
 
+const DATE_FMT: &[BorrowedFormatItem] =
+    format_description!("[month repr:short] [day] [year] [hour]:[minute]:[second]");
 static LINE: &str = "__________________________________";
 
 fn main() -> Result<()> {
@@ -63,6 +73,11 @@ fn main() -> Result<()> {
 
     print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
 
+    if cli.iso9660 {
+        print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
+            .context("error printing iso9660 contents")?;
+    }
+
     Ok(())
 }
 
@@ -98,6 +113,138 @@ fn print_rock_ridge(
         None => "possibly not",
     };
     writeln!(out, "Rock Ridge  : {}", status)
+}
+
+/// Outputs the file contents of the ISO 9660 image in an ls-like listing format.
+fn print_iso9660_contents(
+    iso: &Iso9660,
+    mut out: impl io::Write,
+    use_rock_ridge: bool,
+    use_xa: bool,
+) -> Result<()> {
+    const ISO9660_DEPTH_LIMIT: usize = 512;
+    let mut dirs = VecDeque::new();
+    dirs.push_back((PathBuf::from("/"), 0)); // (path, depth)
+
+    writeln!(out, "{}", LINE)?;
+    writeln!(out, "ISO-9660 Information")?;
+
+    while let Some((dir_path, depth)) = dirs.pop_front() {
+        if depth == ISO9660_DEPTH_LIMIT {
+            bail!("directory recursion too deep. ISO most probably damaged");
+        }
+
+        writeln!(out, "{}:", dir_path.display())?;
+
+        for entry in iso
+            .read_dir(&dir_path)
+            .with_context(|| format!("could not read iso: {}", dir_path.display()))?
+        {
+            let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
+            let translated_name = entry.filename();
+            let entry_name = if rock_ridge.is_none() {
+                translated_name.as_deref()
+            } else {
+                entry.filename_raw()
+            }
+            .with_context(|| format!("could not get file name of lsn: {}", entry.lsn()))?;
+
+            let full_path = dir_path.join(entry_name);
+            if entry.is_dir() && entry_name != "." && entry_name != ".." {
+                // .join("") adds a trailing slash
+                dirs.push_back((full_path.join(""), depth + 1));
+            }
+
+            write!(out, " ")?;
+            if let Some(rock) = &rock_ridge {
+                let total_size = if let Some(symlink) = &rock.symlink_to {
+                    symlink.len() as u64
+                } else {
+                    entry.total_size()
+                };
+                write!(out, " {}", rock.mode)?;
+                write!(out, " {:3}", rock.hard_links)?;
+                write!(out, " {}", rock.user_id)?;
+                write!(out, " {}", rock.group_id)?;
+                write!(out, " [LSN {:6}]", entry.lsn())?;
+                write!(out, " {:9}", total_size)?;
+            } else if use_xa && let Some(xa) = entry.xa() {
+                write!(out, " {}", xa_file_mode_str(xa.file_attr))?;
+                write!(out, " {}", xa.user_id)?;
+                write!(out, " {}", xa.group_id)?;
+                write!(out, " [fn {:02}]", xa.file_num)?;
+                write!(out, " [LSN {:6}]", entry.lsn())?;
+                if let Some(m2f2_size) = xa.mode2form2_size() {
+                    write!(out, " {:9}", m2f2_size)?;
+                    write!(out, " ({:9})", entry.total_size())?;
+                } else {
+                    write!(out, " {:9}", entry.total_size())?;
+                }
+            } else {
+                write!(out, " {}", if entry.is_dir() { 'd' } else { '-' })?;
+                write!(out, " [LSN {:6}]", entry.lsn())?;
+                write!(out, " {:9}", entry.total_size())?;
+            }
+
+            let time = if let Some(rock) = &rock_ridge
+                && let Some(mtime) = rock.modify_time
+            {
+                mtime
+            } else {
+                entry
+                    .timestamp()
+                    .with_context(|| format!("got invalid timestamp: {}", full_path.display()))?
+            };
+
+            let local = UtcOffset::current_local_offset()
+                .context("could not get current time offset from system")?;
+            let time = time
+                .to_offset(local)
+                .format(DATE_FMT)
+                .with_context(|| format!("could not format timestamp: {}", full_path.display()))?;
+
+            write!(out, " {}", time)?;
+            write!(out, " {}", entry_name)?;
+
+            if let Some(rock) = rock_ridge
+                && let Some(symlink_to) = rock.symlink_to
+            {
+                write!(out, " -> {}", symlink_to)?;
+            }
+
+            writeln!(out)?;
+        }
+
+        writeln!(out)?;
+    }
+
+    Ok(())
+}
+
+/// Returns an ls-like string representation of the XA file mode attributes.
+/// Example: "d---1xrxr-r"
+fn xa_file_mode_str(attr: XaFileAttributes) -> String {
+    let mut mode_str = String::new();
+    let mut has_attr = |attribute, letter| {
+        if attr.contains(attribute) {
+            mode_str.push(letter)
+        } else {
+            mode_str.push('-')
+        }
+    };
+    has_attr(XaFileAttributes::Directory, 'd');
+    has_attr(XaFileAttributes::Cdda, 'a');
+    has_attr(XaFileAttributes::Interleaved, 'i');
+    has_attr(XaFileAttributes::Mode2Form2, '2');
+    has_attr(XaFileAttributes::Mode2, '1');
+    has_attr(XaFileAttributes::OwnerExecute, 'x');
+    has_attr(XaFileAttributes::OwnerRead, 'r');
+    has_attr(XaFileAttributes::GroupExecute, 'x');
+    has_attr(XaFileAttributes::GroupRead, 'r');
+    has_attr(XaFileAttributes::WorldExecute, 'x');
+    has_attr(XaFileAttributes::WorldRead, 'r');
+
+    mode_str
 }
 
 fn print_joliet_level(iso: &Iso9660, mut out: impl io::Write) -> Result<(), io::Error> {

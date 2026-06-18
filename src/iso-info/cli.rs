@@ -37,9 +37,21 @@ pub struct Cli {
     #[command(flatten)]
     pub file: FileArg,
 
+    /// Show contents of ISO9660 image in long listing format
+    #[arg(short = 'l', long)]
+    pub iso9660: bool,
+
     /// Do not use Joliet extensions
     #[arg(long)]
     pub no_joliet: bool,
+
+    /// Do not use Rock Ridge extensions
+    #[arg(long)]
+    pub no_rock_ridge: bool,
+
+    /// Do not use CD-ROM XA extensions
+    #[arg(long)]
+    pub no_xa: bool,
 
     /// Check if the image uses Rock Ridge extensions by considering a maximum
     /// of FILE_COUNT files. Provide '0' to check all files.

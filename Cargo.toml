@@ -11,6 +11,7 @@ repository.workspace = true
 anyhow = "1.0.102"
 clap = { version = "4.6.1", features = ["cargo", "derive"] }
 libcdio-rs = { path = "../libcdio-rs" }
+time = { workspace = true, features = ["formatting", "local-offset", "macros"], optional = true }
 tracing-subscriber = "0.3.23"
 
 [[bin]]
@@ -20,4 +21,4 @@ required-features = ["iso-info"]
 
 [features]
 default = ["iso-info"]
-iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
+iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
