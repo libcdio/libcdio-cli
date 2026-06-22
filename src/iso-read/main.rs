@@ -15,10 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
-use std::path::PathBuf;
+use std::{
+    fs::File,
+    io,
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
+use libcdio_rs::Udf;
 
 use crate::cli::Cli;
 
@@ -40,7 +45,30 @@ fn main() -> Result<()> {
         .extract
         .file_name()
         .with_context(|| format!("invalid extract file name: {}", cli.extract.display()))?;
-    let _output = cli.output_file.unwrap_or(PathBuf::from(output_default));
+    let output = cli.output_file.unwrap_or(PathBuf::from(output_default));
+    let mut output = File::create(output).context("could not create output file")?;
+
+    if cli.udf {
+        udf_extract(&image, &cli.extract, &mut output)?;
+    }
+
+    Ok(())
+}
+
+/// Extract given file from a UDF image.
+fn udf_extract(image: &Path, extract: &Path, output: &mut File) -> Result<()> {
+    let udf = Udf::new(image)
+        .with_context(|| format!("could not open image '{}' as UDF", image.display()))?;
+    let entry = udf.entry(extract).with_context(|| {
+        format!(
+            "could not open file '{}' from udf image: {}",
+            extract.display(),
+            image.display()
+        )
+    })?;
+
+    io::copy(&mut entry.reader(), output)
+        .with_context(|| format!("error extracting file '{}' from udf", extract.display()))?;
 
     Ok(())
 }
