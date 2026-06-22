@@ -23,7 +23,7 @@ use std::{
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use libcdio_rs::Udf;
+use libcdio_rs::{Iso9660, Udf};
 
 use crate::cli::Cli;
 
@@ -50,6 +50,8 @@ fn main() -> Result<()> {
 
     if cli.udf {
         udf_extract(&image, &cli.extract, &mut output)?;
+    } else {
+        iso9660_extract(&image, &cli.extract, &mut output)?;
     }
 
     Ok(())
@@ -69,6 +71,24 @@ fn udf_extract(image: &Path, extract: &Path, output: &mut File) -> Result<()> {
 
     io::copy(&mut entry.reader(), output)
         .with_context(|| format!("error extracting file '{}' from udf", extract.display()))?;
+
+    Ok(())
+}
+
+/// Extract given file from an ISO 9660 image.
+fn iso9660_extract(image: &Path, extract: &Path, output: &mut File) -> Result<()> {
+    let iso = Iso9660::new(image)
+        .with_context(|| format!("could not open image '{}' as iso9660", image.display()))?;
+    let entry = iso.entry(extract).with_context(|| {
+        format!(
+            "could not open file '{}' from iso9660 image: {}",
+            extract.display(),
+            image.display()
+        )
+    })?;
+
+    io::copy(&mut entry.reader(), output)
+        .with_context(|| format!("error extracting file '{}' from iso9660", extract.display()))?;
 
     Ok(())
 }

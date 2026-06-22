@@ -25,3 +25,21 @@ fn extract_udf() {
     let gpl = fs::read_to_string("../COPYING").unwrap();
     output.assert(gpl);
 }
+
+static ISO9660_FILE: &str = "../test-data/xa.iso";
+#[test]
+fn extract_iso9660() {
+    let output = NamedTempFile::new("out").unwrap();
+    cmd()
+        .arg("-e")
+        .arg("copying")
+        .arg("-i")
+        .arg(ISO9660_FILE)
+        .arg("-o")
+        .arg(output.path())
+        .assert()
+        .success();
+
+    let gpl = fs::read_to_string("../COPYING").unwrap();
+    output.assert(gpl);
+}
