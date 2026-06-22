@@ -20,9 +20,16 @@ name = "iso-info-rs"
 path = "src/iso-info/main.rs"
 required-features = ["iso-info"]
 
+[[bin]]
+name = "iso-read-rs"
+path = "src/iso-read/main.rs"
+required-features = ["iso-read"]
+
+
 [features]
-default = ["iso-info"]
+default = ["iso-info", "iso-read"]
 iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
+iso-read = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
 
 [dev-dependencies]
 assert_cmd = { version = "2.2.2", features = ["color"] }
