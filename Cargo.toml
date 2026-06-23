@@ -16,6 +16,11 @@ tracing-subscriber = "0.3.23"
 
 # TODO: Remove the "-rs" suffixes before release
 [[bin]]
+name = "cd-drive-rs"
+path = "src/cd-drive/main.rs"
+required-features = ["cd-drive"]
+
+[[bin]]
 name = "iso-info-rs"
 path = "src/iso-info/main.rs"
 required-features = ["iso-info"]
@@ -25,9 +30,9 @@ name = "iso-read-rs"
 path = "src/iso-read/main.rs"
 required-features = ["iso-read"]
 
-
 [features]
-default = ["iso-info", "iso-read"]
+default = ["cd-drive", "iso-info", "iso-read"]
+cd-drive = []
 iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
 iso-read = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
 
