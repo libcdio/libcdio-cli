@@ -21,7 +21,7 @@ use clap::{Args, Parser};
 
 /// Inspect metadata and list contents of ISO 9660 and UDF files.
 #[derive(Parser)]
-#[command(arg_required_else_help = true, version)]
+#[command(arg_required_else_help = true, long_about = libcdio_cli::HEADER, version)]
 pub struct Cli {
     /// Show debugging information (1 = Error, 2 = Warn, 3 = Info, 4 = Debug)
     #[arg(

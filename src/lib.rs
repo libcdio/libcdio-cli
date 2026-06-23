@@ -21,6 +21,17 @@
 
 use tracing_subscriber::filter::LevelFilter;
 
+pub static HEADER: &str = concat!(
+    env!("CARGO_PKG_NAME"),
+    " version ",
+    env!("CARGO_PKG_VERSION"),
+    "\nCopyright (C) 2026 ",
+    env!("CARGO_PKG_AUTHORS"),
+    r"
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+);
+
 pub fn setup_logs(level: u8) {
     let level = match level {
         1 => LevelFilter::ERROR,
