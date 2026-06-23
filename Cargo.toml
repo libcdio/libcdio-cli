@@ -14,8 +14,9 @@ libcdio-rs = { path = "../libcdio-rs" }
 time = { workspace = true, features = ["formatting", "local-offset", "macros"], optional = true }
 tracing-subscriber = "0.3.23"
 
+# TODO: Remove the "-rs" suffixes before release
 [[bin]]
-name = "iso-info"
+name = "iso-info-rs"
 path = "src/iso-info/main.rs"
 required-features = ["iso-info"]
 

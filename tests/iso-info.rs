@@ -1,7 +1,7 @@
 use assert_cmd::{Command, cargo::cargo_bin_cmd};
 
 fn cmd() -> Command {
-    cargo_bin_cmd!("iso-info")
+    cargo_bin_cmd!("iso-info-rs")
 }
 
 static ROCK_RIDGE_FILE: &str = "../test-data/rock-ridge.iso";
