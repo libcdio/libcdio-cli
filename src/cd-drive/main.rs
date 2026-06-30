@@ -35,7 +35,21 @@ fn main() -> Result<()> {
 
 fn print_drive_info(drive: PathBuf) -> Result<()> {
     println!("Using drive {}", drive.display());
-    let _drive = Drive::with_drive(drive)?;
+    let drive = Drive::with_drive(drive)?;
+
+    if let Err(err) = print_device_info(&drive) {
+        println!("{err:?}");
+    };
+
+    Ok(())
+}
+
+fn print_device_info(drive: &Drive) -> Result<()> {
+    println!("Device information:");
+    let info = drive.hardware_info()?;
+    println!("{L1} Vendor   : {}", info.vendor);
+    println!("{L1} Model    : {}", info.model);
+    println!("{L1} Revision : {}", info.revision);
 
     Ok(())
 }
