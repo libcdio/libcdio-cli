@@ -53,6 +53,8 @@ fn print_drive_info(path: PathBuf) -> Result<()> {
         }
     };
 
+    print_drive_capabilities(&drive);
+
     Ok(())
 }
 
@@ -160,6 +162,38 @@ fn print_mmc_features(mmc: &Mmc) {
             if active { "[*]" } else { "[ ]" }
         }
     });
+}
+
+fn print_drive_capabilities(drive: &Drive) {
+    println!("Drive capabilities:");
+    let capabilities = match drive.capabilities() {
+        Ok(cap) => cap,
+        Err(err) => {
+            println!("{err:?}");
+            return;
+        }
+    };
+    println!("{L1} Hardware:");
+    capabilities
+        .misc
+        .into_iter()
+        .for_each(|cap| println!("{L2} {} {}", to_char1(true), cap));
+
+    println!("{L1} Read:");
+    capabilities
+        .read
+        .into_iter()
+        .for_each(|cap| println!("{L2} {} {}", to_char1(true), cap));
+
+    println!("{L1} Write:");
+    capabilities
+        .write
+        .into_iter()
+        .for_each(|cap| println!("{L2} {} {}", to_char1(true), cap));
+}
+
+fn to_char1(supported: bool) -> &'static str {
+    if supported { "+" } else { "-" }
 }
 
 const L1: &str = "  ";
