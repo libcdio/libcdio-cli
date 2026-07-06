@@ -1,4 +1,5 @@
-# libcdio-cli: A collection of programs to work with CD/DVD media, ISO 9660 and UDF images
+# libcdio-cli
+Utilities to work with CD/DVD media, ISO 9660 and UDF images
 
 Also, checkout the workspace [readme](../README.md).
 

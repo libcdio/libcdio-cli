@@ -3,7 +3,7 @@ name = "libcdio-cli"
 version = "0.1.0"
 edition.workspace = true
 authors.workspace = true
-description = "A collection of programs to work with CD/DVD media, ISO 9660 and UDF images"
+description = "Utilities to work with CD/DVD media, ISO 9660 and UDF images"
 license.workspace = true
 repository.workspace = true
 
