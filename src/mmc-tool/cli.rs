@@ -51,4 +51,11 @@ pub struct MmcActions {
     /// Get hardware identifiers (Product, Vendor and Revision)
     #[arg(short, long)]
     pub inquiry: bool,
+
+    /// Set the drive read and write speed in KB/s.
+    ///
+    /// Falls back to the nearest supported value if the provided value is not
+    /// supported.
+    #[arg(short = 'S', long)]
+    pub speed: Option<u16>,
 }

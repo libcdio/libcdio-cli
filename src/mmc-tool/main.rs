@@ -17,7 +17,10 @@
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use libcdio_rs::{Mmc, mmc::PowerCondition};
+use libcdio_rs::{
+    Mmc,
+    mmc::{PowerCondition, RotationMode},
+};
 use tracing_subscriber::EnvFilter;
 
 use crate::cli::Cli;
@@ -53,6 +56,11 @@ fn main() -> Result<()> {
         println!("Product: {}", ident.product);
         println!("Vendor: {}", ident.vendor);
         println!("Revision: {}", ident.revision);
+    } else if let Some(speed) = cli.actions.speed {
+        // some drives may not support CLV (Constant Linear Velocity)
+        if mmc.set_cd_speed(RotationMode::Clv, speed, speed).is_err() {
+            mmc.set_cd_speed(RotationMode::Cav, speed, speed)?;
+        }
     }
 
     Ok(())
