@@ -17,7 +17,7 @@
 
 use anyhow::Result;
 use clap::Parser;
-use libcdio_rs::Mmc;
+use libcdio_rs::{Mmc, mmc::PowerCondition};
 use tracing_subscriber::EnvFilter;
 
 use crate::cli::Cli;
@@ -40,6 +40,8 @@ fn main() -> Result<()> {
         mmc.eject()?;
     } else if cli.actions.close_tray {
         mmc.close_tray()?;
+    } else if cli.actions.standby {
+        mmc.set_power_state(PowerCondition::Standby)?;
     }
 
     Ok(())
