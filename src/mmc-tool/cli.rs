@@ -43,4 +43,12 @@ pub struct MmcActions {
     /// Put the device into standby
     #[arg(short, long)]
     pub standby: bool,
+
+    /// Get the MCN (Media Catalog Number) of the media
+    #[arg(short, long)]
+    pub mcn: bool,
+
+    /// Get hardware identifiers (Product, Vendor and Revision)
+    #[arg(short, long)]
+    pub inquiry: bool,
 }

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use libcdio_rs::{Mmc, mmc::PowerCondition};
 use tracing_subscriber::EnvFilter;
@@ -42,6 +42,17 @@ fn main() -> Result<()> {
         mmc.close_tray()?;
     } else if cli.actions.standby {
         mmc.set_power_state(PowerCondition::Standby)?;
+    } else if cli.actions.mcn {
+        let mcn = mmc
+            .media_catalog_number()
+            .context("could not get MCN")?
+            .context("current media does not have a Media Catalog Number")?;
+        println!("{}", mcn);
+    } else if cli.actions.inquiry {
+        let ident = mmc.hardware_identifiers()?;
+        println!("Product: {}", ident.product);
+        println!("Vendor: {}", ident.vendor);
+        println!("Revision: {}", ident.revision);
     }
 
     Ok(())
