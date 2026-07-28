@@ -29,11 +29,18 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
-    let _mmc = if let Some(device) = cli.device {
+    let mmc = if let Some(device) = cli.device {
         Mmc::with_device(device)?
     } else {
         Mmc::new()?
     };
+
+    if cli.actions.eject {
+        mmc.allow_media_removal()?;
+        mmc.eject()?;
+    } else if cli.actions.close_tray {
+        mmc.close_tray()?;
+    }
 
     Ok(())
 }

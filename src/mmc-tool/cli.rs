@@ -17,11 +17,26 @@
 
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{Args, Parser};
 
 #[derive(Debug, Parser)]
 #[command(arg_required_else_help = true, long_about = libcdio_cli::HEADER, version)]
 pub struct Cli {
     /// Path to an MMC device.
     pub device: Option<PathBuf>,
+
+    #[command(flatten)]
+    pub actions: MmcActions,
+}
+
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+pub struct MmcActions {
+    /// Eject the drive
+    #[arg(short, long)]
+    pub eject: bool,
+
+    /// Close the tray, if present
+    #[arg(short, long)]
+    pub close_tray: bool,
 }
