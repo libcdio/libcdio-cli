@@ -30,6 +30,7 @@ use libcdio_rs::{
     iso9660::{Iso9660Extensions, xa::XaFileAttributes},
 };
 use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
+use tracing_subscriber::EnvFilter;
 
 use crate::cli::Cli;
 
@@ -39,18 +40,17 @@ static LINE: &str = "__________________________________";
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-
-    libcdio_cli::setup_logs(cli.debug);
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
     let mut output: &mut dyn io::Write = if cli.quiet {
         &mut io::sink()
     } else {
         &mut io::stdout()
     };
-
     let file = cli.file.positional.or(cli.file.option).expect(
         "the cli logic must ensure that the file argument is provided either as a positional or as an option",
     );
-
     let mut extensions = Iso9660Extensions::all();
     if cli.no_joliet {
         extensions -= Iso9660Extensions::JolietLevel1;

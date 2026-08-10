@@ -16,10 +16,7 @@
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
 //! Shared code for libcdio-cli
-
 #![doc(hidden)]
-
-use tracing_subscriber::filter::LevelFilter;
 
 pub static HEADER: &str = concat!(
     env!("CARGO_PKG_NAME"),
@@ -31,15 +28,3 @@ pub static HEADER: &str = concat!(
 This is free software; see the source for copying conditions.
 There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
 );
-
-pub fn setup_logs(level: u8) {
-    let level = match level {
-        1 => LevelFilter::ERROR,
-        2 => LevelFilter::WARN,
-        3 => LevelFilter::INFO,
-        4 => LevelFilter::DEBUG,
-        _ => unreachable!("the cli logic must ensure that the level is within 1..=4"),
-    };
-
-    tracing_subscriber::fmt().with_max_level(level).init();
-}

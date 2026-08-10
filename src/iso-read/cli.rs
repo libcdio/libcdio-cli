@@ -23,16 +23,6 @@ use clap::{Args, Parser};
 #[derive(Parser)]
 #[command(arg_required_else_help = true, version)]
 pub struct Cli {
-    /// Show debugging information (1 = Error, 2 = Warn, 3 = Info, 4 = Debug)
-    #[arg(
-        default_value = "2",
-        short,
-        long,
-        value_name = "LEVEL",
-        value_parser = clap::value_parser!(u8).range(1..=4),
-    )]
-    pub debug: u8,
-
     /// Path to the file in the image to extract
     #[arg(short, long, value_name = "FILE")]
     pub extract: PathBuf,

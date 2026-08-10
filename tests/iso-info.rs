@@ -152,8 +152,6 @@ fn udf() {
         .env("TZ", "UTC")
         .arg("-U")
         .arg(UDF_FILE)
-        .arg("--debug")
-        .arg("1")
         .assert()
         .success()
         .stdout(UDF_OUTPUT);

@@ -23,16 +23,6 @@ use clap::{Args, Parser};
 #[derive(Parser)]
 #[command(long_about = libcdio_cli::HEADER, version)]
 pub struct Cli {
-    /// Show debugging information (1 = Error, 2 = Warn, 3 = Info, 4 = Debug)
-    #[arg(
-        default_value = "2",
-        short,
-        long,
-        value_name = "LEVEL",
-        value_parser = clap::value_parser!(u8).range(1..=4),
-    )]
-    pub debug: u8,
-
     /// Path to a disc drive.
     #[command(flatten)]
     pub drive: DriveArg,

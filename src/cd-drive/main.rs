@@ -6,6 +6,7 @@ use libcdio_rs::{
     Drive, Mmc,
     mmc::{MmcFeature, MmcProfile},
 };
+use tracing_subscriber::EnvFilter;
 
 use crate::cli::Cli;
 
@@ -13,11 +14,10 @@ mod cli;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-
-    libcdio_cli::setup_logs(cli.debug);
-
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
     let drive = cli.drive.positional.or(cli.drive.option);
-
     if let Some(drive) = drive {
         print_drive_info(drive)?;
     } else if let drives = Drive::drives()
