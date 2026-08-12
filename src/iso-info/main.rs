@@ -17,11 +17,7 @@
 
 mod cli;
 
-use std::{
-    collections::VecDeque,
-    io,
-    path::{Path, PathBuf},
-};
+use std::{collections::VecDeque, io, path::Path};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
@@ -128,7 +124,7 @@ fn print_iso9660_contents(
 ) -> Result<()> {
     const ISO9660_DEPTH_LIMIT: usize = 512;
     let mut dirs = VecDeque::new();
-    dirs.push_back((PathBuf::from("/"), 0)); // (path, depth)
+    dirs.push_back(("/".to_owned(), 0)); // (path, depth)
 
     writeln!(out, "{}", LINE)?;
     writeln!(out, "ISO-9660 Information")?;
@@ -138,11 +134,11 @@ fn print_iso9660_contents(
             bail!("directory recursion too deep. ISO most probably damaged");
         }
 
-        writeln!(out, "{}:", dir_path.display())?;
+        writeln!(out, "{}:", dir_path)?;
 
         for entry in iso
             .read_dir(&dir_path)
-            .with_context(|| format!("could not read iso: {}", dir_path.display()))?
+            .with_context(|| format!("could not read entry '{}' from iso", dir_path))?
         {
             let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
             let translated_name = entry.filename();
@@ -153,10 +149,9 @@ fn print_iso9660_contents(
             }
             .with_context(|| format!("could not get file name of lsn: {}", entry.lsn()))?;
 
-            let full_path = dir_path.join(entry_name);
+            let full_path = dir_path.clone() + entry_name + "/";
             if entry.is_dir() && entry_name != "." && entry_name != ".." {
-                // .join("") adds a trailing slash
-                dirs.push_back((full_path.join(""), depth + 1));
+                dirs.push_back((full_path.clone(), depth + 1));
             }
 
             write!(out, " ")?;
@@ -197,7 +192,7 @@ fn print_iso9660_contents(
             } else {
                 entry
                     .timestamp()
-                    .with_context(|| format!("got invalid timestamp: {}", full_path.display()))?
+                    .with_context(|| format!("got invalid timestamp: {}", full_path))?
             };
 
             let local = UtcOffset::current_local_offset()
@@ -205,7 +200,7 @@ fn print_iso9660_contents(
             let time = time
                 .to_offset(local)
                 .format(DATE_FMT)
-                .with_context(|| format!("could not format timestamp: {}", full_path.display()))?;
+                .with_context(|| format!("could not format timestamp: {}", full_path))?;
 
             write!(out, " {}", time)?;
             write!(out, " {}", entry_name)?;
@@ -260,26 +255,26 @@ fn print_udf_contents(path: &Path, out: &mut dyn io::Write) -> Result<()> {
         .root()
         .with_context(|| format!("could not find root in udf image: {}", path.display()))?;
     let mut dirs = VecDeque::new();
-    dirs.push_back((root, PathBuf::from("/")));
+    dirs.push_back((root, "/".to_owned()));
 
     while let Some((dir, dir_path)) = dirs.pop_front() {
-        writeln!(out, "{}:", dir_path.display())?;
+        writeln!(out, "{}:", dir_path)?;
         let mut next_entry = dir.next();
 
         while let Some(entry) = next_entry {
             let filename = entry
                 .filename()
                 .with_context(|| format!("could not get filename at: {}", path.display()))?;
-            let file_path = dir_path.join(filename);
+            let file_path = dir_path.clone() + filename + "/";
 
             let local = UtcOffset::current_local_offset()
                 .context("could not get current time offset from system")?;
             let modify_time = entry
                 .modify_time()
-                .with_context(|| format!("could not get timestamp: {}", file_path.display()))?
+                .with_context(|| format!("could not get timestamp: {}", file_path))?
                 .to_offset(local)
                 .format(DATE_FMT)
-                .with_context(|| format!("could not format timestamp: {}", file_path.display()))?;
+                .with_context(|| format!("could not format timestamp: {}", file_path))?;
             write!(out, " ")?;
             write!(out, " {}", entry.mode())?;
             write!(out, " {}", entry.uid)?;
@@ -291,8 +286,7 @@ fn print_udf_contents(path: &Path, out: &mut dyn io::Write) -> Result<()> {
             writeln!(out)?;
 
             if let Some(subdir) = entry.open_dir() {
-                // .join("") adds a trailing slash
-                dirs.push_back((subdir, file_path.join("")));
+                dirs.push_back((subdir, file_path));
             }
             next_entry = entry.next();
         }

@@ -41,11 +41,7 @@ fn main() -> Result<()> {
         bail!("could not open input file at {}", image.display());
     }
 
-    let output_default = cli
-        .extract
-        .file_name()
-        .with_context(|| format!("invalid extract file name: {}", cli.extract.display()))?;
-    let output = cli.output_file.unwrap_or(PathBuf::from(output_default));
+    let output = cli.output_file.unwrap_or(PathBuf::from(&cli.extract));
     let mut output = File::create(output).context("could not create output file")?;
 
     if cli.udf {
@@ -58,37 +54,37 @@ fn main() -> Result<()> {
 }
 
 /// Extract given file from a UDF image.
-fn udf_extract(image: &Path, extract: &Path, output: &mut File) -> Result<()> {
+fn udf_extract(image: &Path, extract: &str, output: &mut File) -> Result<()> {
     let udf = Udf::new(image)
         .with_context(|| format!("could not open image '{}' as UDF", image.display()))?;
     let entry = udf.entry(extract).with_context(|| {
         format!(
             "could not open file '{}' from udf image: {}",
-            extract.display(),
+            extract,
             image.display()
         )
     })?;
 
     io::copy(&mut entry.reader(), output)
-        .with_context(|| format!("error extracting file '{}' from udf", extract.display()))?;
+        .with_context(|| format!("error extracting file '{}' from udf", extract))?;
 
     Ok(())
 }
 
 /// Extract given file from an ISO 9660 image.
-fn iso9660_extract(image: &Path, extract: &Path, output: &mut File) -> Result<()> {
+fn iso9660_extract(image: &Path, extract: &str, output: &mut File) -> Result<()> {
     let iso = Iso9660::new(image)
         .with_context(|| format!("could not open image '{}' as iso9660", image.display()))?;
     let entry = iso.entry(extract).with_context(|| {
         format!(
             "could not open file '{}' from iso9660 image: {}",
-            extract.display(),
+            extract,
             image.display()
         )
     })?;
 
     io::copy(&mut entry.reader(), output)
-        .with_context(|| format!("error extracting file '{}' from iso9660", extract.display()))?;
+        .with_context(|| format!("error extracting file '{}' from iso9660", extract))?;
 
     Ok(())
 }

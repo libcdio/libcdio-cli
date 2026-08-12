@@ -25,7 +25,7 @@ use clap::{Args, Parser};
 pub struct Cli {
     /// Path to the file in the image to extract
     #[arg(short, long, value_name = "FILE")]
-    pub extract: PathBuf,
+    pub extract: String,
 
     /// Path to an ISO9660 and/or UDF image
     #[command(flatten)]
