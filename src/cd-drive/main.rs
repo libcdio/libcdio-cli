@@ -47,10 +47,7 @@ fn print_drive_info(path: PathBuf) -> Result<()> {
     println!("MMC information:");
     match Mmc::with_device(path) {
         Err(err) => println!("{err:?}"),
-        Ok(mmc) => {
-            print_mmc_level(&mmc);
-            print_mmc_features(&mmc);
-        }
+        Ok(mmc) => print_mmc_features(&mmc),
     };
 
     print_drive_capabilities(&drive);
@@ -66,18 +63,6 @@ fn print_device_info(drive: &Drive) -> Result<()> {
     println!("{L1} Revision : {}", info.revision);
 
     Ok(())
-}
-
-fn print_mmc_level(mmc: &Mmc) {
-    let level = match mmc.level() {
-        Ok(level) => level,
-        Err(err) => {
-            println!("{:?}", err);
-            return;
-        }
-    };
-
-    println!("{L1} Level    : {}", level);
 }
 
 fn print_mmc_features(mmc: &Mmc) {
