@@ -30,11 +30,17 @@ name = "iso-read-rs"
 path = "src/iso-read/main.rs"
 required-features = ["iso-read"]
 
+[[bin]]
+name = "mmc-tool-rs"
+path = "src/mmc-tool/main.rs"
+required-features = ["mmc-tool"]
+
 [features]
-default = ["cd-drive", "iso-info", "iso-read"]
+default = ["cd-drive", "iso-info", "iso-read", "mmc-tool"]
 cd-drive = []
 iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
 iso-read = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
+mmc-tool = []
 
 [dev-dependencies]
 assert_cmd = { version = "2.2.2", features = ["color"] }
