@@ -27,7 +27,7 @@ use anyhow::{Context, Result, bail};
 use clap::Parser;
 use libcdio_rs::{
     Iso9660, Udf,
-    iso9660::{Iso9660Extensions, xa::XaFileAttributes},
+    iso9660::{Iso9660Extensions, XaFileAttributes},
 };
 use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
 use tracing_subscriber::EnvFilter;
