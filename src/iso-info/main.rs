@@ -139,15 +139,13 @@ fn print_iso9660_contents(
 
         for entry in iso.read_dir(&dir_path)? {
             let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
-            let translated_name = entry.filename();
             let entry_name = if rock_ridge.is_none() {
-                translated_name.as_deref()
+                entry.filename()?
             } else {
-                entry.filename_raw()
-            }
-            .with_context(|| format!("could not get file name of lsn: {}", entry.lsn()))?;
+                entry.filename_raw().map(String::from)?
+            };
 
-            let full_path = dir_path.clone() + entry_name + "/";
+            let full_path = dir_path.clone() + &entry_name + "/";
             if entry.is_dir() && entry_name != "." && entry_name != ".." {
                 dirs.push_back((full_path.clone(), depth + 1));
             }
@@ -188,9 +186,7 @@ fn print_iso9660_contents(
             {
                 mtime
             } else {
-                entry
-                    .timestamp()
-                    .with_context(|| format!("got invalid timestamp: {}", full_path))?
+                entry.timestamp()?
             };
 
             let local = UtcOffset::current_local_offset()
