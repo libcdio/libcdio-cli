@@ -26,8 +26,8 @@ use std::{
 use anyhow::{Context, Result, bail};
 use clap::Parser;
 use libcdio_rs::{
-    Iso9660, Udf,
-    iso9660::{Iso9660Extensions, XaFileAttributes},
+    Iso, Udf,
+    iso9660::{IsoExtensions, XaFileAttributes},
 };
 use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
 use tracing_subscriber::EnvFilter;
@@ -51,14 +51,14 @@ fn main() -> Result<()> {
     let file = cli.file.positional.or(cli.file.option).expect(
         "the cli logic must ensure that the file argument is provided either as a positional or as an option",
     );
-    let mut extensions = Iso9660Extensions::all();
+    let mut extensions = IsoExtensions::all();
     if cli.no_joliet {
-        extensions -= Iso9660Extensions::JolietLevel1;
-        extensions -= Iso9660Extensions::JolietLevel2;
-        extensions -= Iso9660Extensions::JolietLevel3;
+        extensions -= IsoExtensions::JolietLevel1;
+        extensions -= IsoExtensions::JolietLevel2;
+        extensions -= IsoExtensions::JolietLevel3;
     }
 
-    if let Some(iso) = Iso9660::builder(&file).extensions(extensions).build() {
+    if let Some(iso) = Iso::builder(&file).extensions(extensions).build() {
         print_iso9660_metadata(&iso, &file, &mut output)
             .context("io error while printing iso9660 metadata")?;
 
@@ -86,7 +86,7 @@ fn main() -> Result<()> {
 }
 
 fn print_iso9660_metadata(
-    iso: &Iso9660,
+    iso: &Iso,
     path: &Path,
     mut out: impl io::Write,
 ) -> Result<(), io::Error> {
@@ -107,7 +107,7 @@ fn print_iso9660_metadata(
 }
 
 fn print_rock_ridge(
-    iso: &Iso9660,
+    iso: &Iso,
     file_limit: Option<u64>,
     mut out: impl io::Write,
 ) -> Result<(), io::Error> {
@@ -121,7 +121,7 @@ fn print_rock_ridge(
 
 /// Outputs the file contents of the ISO 9660 image in an ls-like listing format.
 fn print_iso9660_contents(
-    iso: &Iso9660,
+    iso: &Iso,
     mut out: impl io::Write,
     use_rock_ridge: bool,
     use_xa: bool,
@@ -295,7 +295,7 @@ fn print_udf_contents(path: PathBuf, out: &mut dyn io::Write) -> Result<()> {
     Ok(())
 }
 
-fn print_joliet_level(iso: &Iso9660, mut out: impl io::Write) -> Result<(), io::Error> {
+fn print_joliet_level(iso: &Iso, mut out: impl io::Write) -> Result<(), io::Error> {
     let Some(joliet_level) = iso.joliet_level() else {
         return writeln!(out, "No Joliet extensions");
     };

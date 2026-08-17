@@ -23,7 +23,7 @@ use std::{
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use libcdio_rs::{Iso9660, Udf};
+use libcdio_rs::{Iso, Udf};
 use tracing_subscriber::EnvFilter;
 
 use crate::cli::Cli;
@@ -65,7 +65,7 @@ fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()>
 
 /// Extract given file from an ISO 9660 image.
 fn iso9660_extract(image: &Path, extract: &str, output: &mut File) -> Result<()> {
-    let iso = Iso9660::new(image)
+    let iso = Iso::new(image)
         .with_context(|| format!("could not open image '{}' as iso9660", image.display()))?;
     let entry = iso.entry(extract).with_context(|| {
         format!(
