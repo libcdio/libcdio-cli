@@ -58,28 +58,25 @@ fn main() -> Result<()> {
         extensions -= IsoExtensions::JolietLevel3;
     }
 
-    if let Some(iso) = Iso::builder(&file).extensions(extensions).build() {
-        print_iso9660_metadata(&iso, &file, &mut output)
-            .context("io error while printing iso9660 metadata")?;
-
-        if cli.show_rock_ridge.is_some() {
-            let file_limit = cli.show_rock_ridge.filter(|file_limit| *file_limit != 0);
-            print_rock_ridge(&iso, file_limit, &mut output)
-                .context("io error while printing rock ridge status")?;
-        }
-
-        print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
-
-        if cli.iso9660 {
-            print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
-                .context("error printing iso9660 contents")?;
-        }
-    } else if !cli.udf {
-        bail!("error opening iso9660 image: {}", file.display());
-    };
-
     if cli.udf {
-        print_udf_contents(file, &mut output)?;
+        return print_udf_contents(file, &mut output);
+    }
+
+    let iso = Iso::builder(file.clone()).extensions(extensions).build()?;
+    print_iso9660_metadata(&iso, &file, &mut output)
+        .context("io error while printing iso9660 metadata")?;
+
+    if cli.show_rock_ridge.is_some() {
+        let file_limit = cli.show_rock_ridge.filter(|file_limit| *file_limit != 0);
+        print_rock_ridge(&iso, file_limit, &mut output)
+            .context("io error while printing rock ridge status")?;
+    }
+
+    print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
+
+    if cli.iso9660 {
+        print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
+            .context("error printing iso9660 contents")?;
     }
 
     Ok(())
