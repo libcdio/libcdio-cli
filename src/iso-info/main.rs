@@ -137,10 +137,7 @@ fn print_iso9660_contents(
 
         writeln!(out, "{}:", dir_path)?;
 
-        for entry in iso
-            .read_dir(&dir_path)
-            .with_context(|| format!("could not read entry '{}' from iso", dir_path))?
-        {
+        for entry in iso.read_dir(&dir_path)? {
             let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
             let translated_name = entry.filename();
             let entry_name = if rock_ridge.is_none() {
