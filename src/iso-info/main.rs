@@ -17,7 +17,11 @@
 
 mod cli;
 
-use std::{collections::VecDeque, io, path::Path};
+use std::{
+    collections::VecDeque,
+    io,
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
@@ -75,7 +79,7 @@ fn main() -> Result<()> {
     };
 
     if cli.udf {
-        print_udf_contents(&file, &mut output)?;
+        print_udf_contents(file, &mut output)?;
     }
 
     Ok(())
@@ -247,9 +251,9 @@ fn xa_file_mode_str(attr: XaFileAttributes) -> String {
 }
 
 /// Outputs the file contents of the UDF image in an ls-like listing format.
-fn print_udf_contents(path: &Path, out: &mut dyn io::Write) -> Result<()> {
-    let udf =
-        Udf::new(path).with_context(|| format!("could not open udf image: {}", path.display()))?;
+fn print_udf_contents(path: PathBuf, out: &mut dyn io::Write) -> Result<()> {
+    let udf = Udf::new(path.clone())
+        .with_context(|| format!("could not open udf image: {}", path.display()))?;
 
     let root = udf
         .root()

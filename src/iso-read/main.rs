@@ -45,7 +45,7 @@ fn main() -> Result<()> {
     let mut output = File::create(output).context("could not create output file")?;
 
     if cli.udf {
-        udf_extract(&image, &cli.extract, &mut output)?;
+        udf_extract(image, &cli.extract, &mut output)?;
     } else {
         iso9660_extract(&image, &cli.extract, &mut output)?;
     }
@@ -54,8 +54,8 @@ fn main() -> Result<()> {
 }
 
 /// Extract given file from a UDF image.
-fn udf_extract(image: &Path, extract: &str, output: &mut File) -> Result<()> {
-    let udf = Udf::new(image)
+fn udf_extract(image: PathBuf, extract: &str, output: &mut File) -> Result<()> {
+    let udf = Udf::new(image.clone())
         .with_context(|| format!("could not open image '{}' as UDF", image.display()))?;
     let entry = udf.entry(extract).with_context(|| {
         format!(
