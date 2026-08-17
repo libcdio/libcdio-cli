@@ -100,9 +100,9 @@ fn print_rock_ridge(
     mut out: impl io::Write,
 ) -> Result<(), io::Error> {
     let status = match iso.have_rock_ridge(file_limit) {
-        Some(true) => "yes",
-        Some(false) => "no",
-        None => "possibly not",
+        Ok(true) => "yes",
+        Ok(false) => "no",
+        _ => "possibly not",
     };
     writeln!(out, "Rock Ridge  : {}", status)
 }
