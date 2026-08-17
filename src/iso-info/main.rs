@@ -25,10 +25,7 @@ use std::{
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use libcdio_rs::{
-    Iso, Udf,
-    iso9660::{IsoExtensions, XaFileAttributes},
-};
+use libcdio_rs::{Iso, Udf, iso9660::XaFileAttributes};
 use time::{UtcOffset, format_description::BorrowedFormatItem, macros::format_description};
 use tracing_subscriber::EnvFilter;
 
@@ -51,18 +48,12 @@ fn main() -> Result<()> {
     let file = cli.file.positional.or(cli.file.option).expect(
         "the cli logic must ensure that the file argument is provided either as a positional or as an option",
     );
-    let mut extensions = IsoExtensions::all();
-    if cli.no_joliet {
-        extensions -= IsoExtensions::JolietLevel1;
-        extensions -= IsoExtensions::JolietLevel2;
-        extensions -= IsoExtensions::JolietLevel3;
-    }
 
     if cli.udf {
         return print_udf_contents(file, &mut output);
     }
 
-    let iso = Iso::builder(file.clone()).extensions(extensions).build()?;
+    let iso = Iso::new(file.clone())?;
     print_iso9660_metadata(&iso, &file, &mut output)
         .context("io error while printing iso9660 metadata")?;
 

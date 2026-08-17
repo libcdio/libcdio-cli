@@ -31,10 +31,6 @@ pub struct Cli {
     #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
 
-    /// Do not use Joliet extensions
-    #[arg(long)]
-    pub no_joliet: bool,
-
     /// Do not use Rock Ridge extensions
     #[arg(long)]
     pub no_rock_ridge: bool,
