@@ -254,9 +254,7 @@ fn xa_file_mode_str(attr: XaFileAttributes) -> String {
 fn print_udf_contents(path: PathBuf, out: &mut dyn io::Write) -> Result<()> {
     let udf = Udf::new(path.clone())?;
 
-    let root = udf
-        .root()
-        .with_context(|| format!("could not find root in udf image: {}", path.display()))?;
+    let root = udf.root()?;
     let mut dirs = VecDeque::new();
     dirs.push_back((root, "/".to_owned()));
 
