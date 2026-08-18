@@ -263,16 +263,13 @@ fn print_udf_contents(path: PathBuf, out: &mut dyn io::Write) -> Result<()> {
         let mut next_entry = dir.next();
 
         while let Some(entry) = next_entry {
-            let filename = entry
-                .filename()
-                .with_context(|| format!("could not get filename at: {}", path.display()))?;
+            let filename = entry.filename()?;
             let file_path = dir_path.clone() + filename + "/";
 
             let local = UtcOffset::current_local_offset()
                 .context("could not get current time offset from system")?;
             let modify_time = entry
-                .modify_time()
-                .with_context(|| format!("could not get timestamp: {}", file_path))?
+                .modify_time()?
                 .to_offset(local)
                 .format(DATE_FMT)
                 .with_context(|| format!("could not format timestamp: {}", file_path))?;
