@@ -128,7 +128,7 @@ fn print_iso9660_contents(
 
         writeln!(out, "{}:", dir_path)?;
 
-        for entry in iso.read_dir(&dir_path)? {
+        for entry in iso.read_dir(dir_path.clone())? {
             let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
             let entry_name = if rock_ridge.is_none() {
                 entry.filename()?
