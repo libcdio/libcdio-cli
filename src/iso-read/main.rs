@@ -43,7 +43,7 @@ fn main() -> Result<()> {
     if cli.udf {
         udf_extract(image, cli.extract, &mut output)?;
     } else {
-        iso9660_extract(image, &cli.extract, &mut output)?;
+        iso9660_extract(image, cli.extract, &mut output)?;
     }
 
     Ok(())
@@ -60,18 +60,11 @@ fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()>
 }
 
 /// Extract given file from an ISO 9660 image.
-fn iso9660_extract(image: PathBuf, extract: &str, output: &mut File) -> Result<()> {
+fn iso9660_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()> {
     let iso = Iso::new(image.clone())?;
-    let entry = iso.entry(extract).with_context(|| {
-        format!(
-            "could not open file '{}' from iso9660 image: {}",
-            extract,
-            image.display()
-        )
-    })?;
+    let entry = iso.entry(extract)?;
 
-    io::copy(&mut entry.reader(), output)
-        .with_context(|| format!("error extracting file '{}' from iso9660", extract))?;
+    io::copy(&mut entry.reader(), output)?;
 
     Ok(())
 }
