@@ -57,10 +57,10 @@ fn print_drive_info(path: PathBuf) -> Result<()> {
 
 fn print_device_info(drive: &Drive) -> Result<()> {
     println!("Device information:");
-    let info = drive.hardware_info()?;
-    println!("{L1} Vendor   : {}", info.vendor);
-    println!("{L1} Model    : {}", info.model);
-    println!("{L1} Revision : {}", info.revision);
+    let identifiers = drive.hardware_identifiers()?;
+    println!("{L1} Vendor   : {}", identifiers.vendor);
+    println!("{L1} Model    : {}", identifiers.model);
+    println!("{L1} Revision : {}", identifiers.revision);
 
     Ok(())
 }
