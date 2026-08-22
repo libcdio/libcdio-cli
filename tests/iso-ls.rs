@@ -1,12 +1,12 @@
-use assert_cmd::{Command, cargo::cargo_bin_cmd};
+use assert_cmd::{cargo::cargo_bin_cmd, Command};
 
 fn cmd() -> Command {
-    cargo_bin_cmd!("iso-info-rs")
+    cargo_bin_cmd!("iso-ls")
 }
 
-static ROCK_RIDGE_FILE: &str = "../test-data/rock-ridge.iso";
+static ROCK_RIDGE_FILE: &str = "test-data/rock-ridge.iso";
 static ROCK_METADATA: &str = r"__________________________________
-ISO 9660 image: ../test-data/rock-ridge.iso
+ISO 9660 image: test-data/rock-ridge.iso
 Application : K3B THE CD KREATOR VERSION 0.11.20 (C) 2003 SEBASTIAN TRUEG AND THE K3B TEAM
 Preparer    : K3b - Version 0.11.20
 Publisher   : Rocky Bernstein
@@ -23,9 +23,9 @@ fn rock_metadata() {
         .stdout(ROCK_METADATA);
 }
 
-static JOLIET_FILE: &str = "../test-data/joliet.iso";
+static JOLIET_FILE: &str = "test-data/joliet.iso";
 static JOLIET_METADATA: &str = r"__________________________________
-ISO 9660 image: ../test-data/joliet.iso
+ISO 9660 image: test-data/joliet.iso
 Application : K3B THE CD KREATOR VERSION 0.11.12 (C) 2003 SEBASTIAN TRUEG AND THE K3B TEAM
 Preparer    : K3b - Version 0.11.12
 Publisher   : Rocky Bernstein
@@ -42,9 +42,9 @@ fn joliet_metadata() {
         .stdout(JOLIET_METADATA);
 }
 
-static XA_FILE: &str = "../test-data/xa.iso";
+static XA_FILE: &str = "test-data/xa.iso";
 static XA_METADATA: &str = r"__________________________________
-ISO 9660 image: ../test-data/xa.iso
+ISO 9660 image: test-data/xa.iso
 Application : GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (C) 1997-2006 J.PEARSON/J.SCHILLING (C) 2006-2007 CDRKIT TEAM
 System      : LINUX
 Volume      : CDROM
@@ -140,7 +140,7 @@ fn xa_contents() {
         .stdout(XA_METADATA.to_owned() + XA_CONTENTS);
 }
 
-static UDF_FILE: &str = "../test-data/udf.iso";
+static UDF_FILE: &str = "test-data/udf.iso";
 static UDF_OUTPUT: &str = "/:
   dr-xr-xr-x 4294967295 4294967295   1       100 Feb 20 2014 01:26:20 .
   -r-xr-xr-x 4294967295 4294967295   1        10 Feb 20 2014 01:25:12 FéжΘvrier

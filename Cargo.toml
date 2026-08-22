@@ -1,46 +1,45 @@
 [package]
 name = "libcdio-cli"
 version = "0.1.0"
-edition.workspace = true
-authors.workspace = true
+edition = "2024"
+authors = ["Shiva Kiran Koninty"]
 description = "Utilities to work with CD/DVD media, ISO 9660 and UDF images"
-license.workspace = true
-repository.workspace = true
+license = "GPL-3.0-or-later"
+repository = "https://github.com/libcdio/libcdio-cli"
 
 [dependencies]
 anyhow = "1.0.102"
 clap = { version = "4.6.1", features = ["cargo", "derive"] }
-libcdio-rs = { path = "../libcdio-rs" }
-time = { workspace = true, features = ["formatting", "local-offset", "macros"], optional = true }
+libcdio-rs = { git = "https://github.com/libcdio/libcdio-rs" }
+time = { version = "0.3.47", features = ["formatting", "local-offset", "macros"], optional = true }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
-# TODO: Remove the "-rs" suffixes before release
 [[bin]]
-name = "cd-drive-rs"
-path = "src/cd-drive/main.rs"
-required-features = ["cd-drive"]
+name = "drive-info"
+path = "src/drive-info/main.rs"
+required-features = ["drive-info"]
 
 [[bin]]
-name = "iso-info-rs"
-path = "src/iso-info/main.rs"
-required-features = ["iso-info"]
+name = "iso-cp"
+path = "src/iso-cp/main.rs"
+required-features = ["iso-cp"]
 
 [[bin]]
-name = "iso-read-rs"
-path = "src/iso-read/main.rs"
-required-features = ["iso-read"]
+name = "iso-ls"
+path = "src/iso-ls/main.rs"
+required-features = ["iso-ls"]
 
 [[bin]]
-name = "mmc-tool-rs"
-path = "src/mmc-tool/main.rs"
-required-features = ["mmc-tool"]
+name = "mmc-cli"
+path = "src/mmc-cli/main.rs"
+required-features = ["mmc-cli"]
 
 [features]
-default = ["cd-drive", "iso-info", "iso-read", "mmc-tool"]
-cd-drive = ["libcdio-rs/mmc"]
-iso-info = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
-iso-read = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
-mmc-tool = ["libcdio-rs/mmc"]
+default = ["drive-info", "iso-ls", "iso-cp", "mmc-cli"]
+drive-info = ["libcdio-rs/mmc"]
+iso-ls = ["libcdio-rs/iso9660", "libcdio-rs/udf", "dep:time"]
+iso-cp = ["libcdio-rs/iso9660", "libcdio-rs/udf"]
+mmc-cli = ["libcdio-rs/mmc"]
 
 [dev-dependencies]
 assert_cmd = { version = "2.2.2", features = ["color"] }

@@ -1,7 +1,19 @@
 # libcdio-cli
-Utilities to work with CD/DVD media, ISO 9660 and UDF images
+Utilities to work with CD/DVD media, ISO 9660 and UDF images.
+| Program    | Description                                                  |
+|------------|--------------------------------------------------------------|
+| drive-info | Print drive information such as identifiers and capabilities |
+| iso-cp     | Copy files from an ISO 9660 or UDF filesystem.               |
+| iso-ls     | List files of ISO 9660 and UDF filesystems.                  |
+| mmc-cli    | Issue SCSI MMC commands to a drive.                          |
 
-Also, checkout the workspace [readme](../README.md).
+## Install
+- Install [Rust][rust-install].
+- Install [clang][bindgen-reqs].
+- Build and install from [crates.io][libcdio-cli-cratesio]:
+  ```shell
+  cargo install libcdio-cli
+  ```
 
 ## License
 Copyright (C) 2026 Shiva Kiran Koninty <shiva@skran.xyz>
@@ -18,3 +30,7 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+[rust-install]: https://rust-lang.org/tools/install/
+[bindgen-reqs]: https://rust-lang.github.io/rust-bindgen/requirements.html
+[libcdio-cli-cratesio]: https://crates.io/crates/libcdio-cli
