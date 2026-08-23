@@ -1,7 +1,7 @@
 use std::fs;
 
-use assert_cmd::{cargo::cargo_bin_cmd, Command};
-use assert_fs::{assert::PathAssert, NamedTempFile};
+use assert_cmd::{Command, cargo::cargo_bin_cmd};
+use assert_fs::{NamedTempFile, assert::PathAssert};
 
 fn cmd() -> Command {
     cargo_bin_cmd!("iso-cp")
