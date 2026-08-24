@@ -15,6 +15,10 @@ Utilities to work with CD/DVD media, ISO 9660 and UDF images.
   cargo install libcdio-cli
   ```
 
+## See also
+These programs are based on the functionality provided by
+[libcdio-rs][libcdio-rs-cratesio].
+
 ## License
 Copyright (C) 2026 Shiva Kiran Koninty <shiva@skran.xyz>
 
@@ -34,3 +38,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 [rust-install]: https://rust-lang.org/tools/install/
 [bindgen-reqs]: https://rust-lang.github.io/rust-bindgen/requirements.html
 [libcdio-cli-cratesio]: https://crates.io/crates/libcdio-cli
+[libcdio-rs-cratesio]: https://crates.io/crates/libcdio-rs
