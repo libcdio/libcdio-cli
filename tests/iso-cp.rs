@@ -7,7 +7,7 @@ fn cmd() -> Command {
     cargo_bin_cmd!("iso-cp")
 }
 
-static UDF_FILE: &str = "test-data/udf1.iso";
+static UDF_FILE: &str = "tests/data/udf1.iso";
 #[test]
 fn extract_udf() {
     let output = NamedTempFile::new("out").unwrap();
@@ -26,7 +26,7 @@ fn extract_udf() {
     output.assert(gpl);
 }
 
-static ISO9660_FILE: &str = "test-data/xa.iso";
+static ISO9660_FILE: &str = "tests/data/xa.iso";
 #[test]
 fn extract_iso9660() {
     let output = NamedTempFile::new("out").unwrap();

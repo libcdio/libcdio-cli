@@ -6,6 +6,7 @@ authors = ["Shiva Kiran Koninty"]
 description = "Utilities to work with CD/DVD media, ISO 9660 and UDF images"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/libcdio/libcdio-cli"
+exclude = ["/tests"]
 
 [dependencies]
 anyhow = "1.0.102"
