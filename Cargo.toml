@@ -1,11 +1,13 @@
 [package]
 name = "libcdio-cli"
 version = "0.1.0"
-edition = "2024"
 authors = ["Shiva Kiran Koninty"]
+edition = "2024"
 description = "Utilities to work with CD/DVD media, ISO 9660 and UDF images"
-license = "GPL-3.0-or-later"
 repository = "https://github.com/libcdio/libcdio-cli"
+license = "GPL-3.0-or-later"
+keywords = ["cd", "iso9660", "mmc", "scsi", "udf"]
+categories = ["command-line-utilities", "filesystem", "hardware-support"]
 exclude = ["/tests"]
 
 [dependencies]
