@@ -15,6 +15,22 @@ Utilities to work with CD/DVD media, ISO 9660 and UDF images.
   cargo install libcdio-cli
   ```
 
+## Development
+### Use the provided Git Hooks
+These are set to perform lint and formatting checks before every
+commit:
+```sh
+git config core.hooksPath .githooks
+```
+
+If you have to skip hooks for a draft commit, use `--no-verify`:
+```sh
+git commit --no-verify
+```
+
+### Tests
+Use `cargo test` to run the tests.
+
 ## See also
 These programs are based on the functionality provided by
 [libcdio-rs][libcdio-rs-cratesio].

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+echo "Running pre-commit checks.."
+
+echo "Check clippy.."
+cargo +stable clippy --workspace --all-targets --all-features -- -D warnings
+
+echo "Check formatting.."
+cargo +stable fmt -- --check
