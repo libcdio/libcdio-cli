@@ -31,8 +31,7 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
-    let image = cli.image.positional.or(cli.image.option)
-        .expect( "the cli logic must ensure that the file argument is provided either as a positional or as an option");
+    let image = cli.image;
     if !image.exists() {
         bail!("could not open input file at {}", image.display());
     }
