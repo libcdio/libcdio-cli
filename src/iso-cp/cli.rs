@@ -17,37 +17,35 @@
 
 use std::path::PathBuf;
 
-use clap::{Args, Parser};
+use clap::Parser;
 
-/// Extract files from ISO 9660 and UDF files.
+/// Copy files from an ISO 9660 or UDF filesystem.
 #[derive(Parser)]
 #[command(arg_required_else_help = true, version)]
 pub struct Cli {
-    /// Path to the file in the image to extract
-    #[arg(short, long, value_name = "FILE")]
-    pub extract: String,
+    /// Path to an ISO 9660 or UDF image.
+    #[arg(value_name = "IMAGE")]
+    pub image: PathBuf,
 
-    /// Path to an ISO9660 and/or UDF image
-    #[command(flatten)]
-    pub image: FileArg,
+    /// Path to a source file in the image.
+    ///
+    /// Directories are currently not supported.
+    #[arg(value_name = "SOURCE")]
+    pub source: String,
 
-    /// Path of the output file. Defaults to name of the extracted file.
-    #[arg(short, long, value_name = "FILE")]
-    pub output_file: Option<PathBuf>,
-
-    /// Use UDF
-    #[arg(short = 'U', long)]
-    pub udf: bool,
+    /// Path to a destination file or directory.
+    #[arg(value_name = "DESTINATION")]
+    pub destination: PathBuf,
 }
 
-#[derive(Args)]
-#[group(required = true, multiple = false)]
-pub struct FileArg {
-    /// Path to an ISO9660 and/or UDF image
-    #[arg(short = 'i', long = "image", value_name = "FILE")]
-    pub option: Option<PathBuf>,
+#[cfg(test)]
+mod tests {
+    use clap::CommandFactory;
 
-    /// Path to an ISO9660 and/or UDF image
-    #[arg(value_name = "FILE")]
-    pub positional: Option<PathBuf>,
+    use super::*;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
 }

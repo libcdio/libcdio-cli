@@ -31,28 +31,39 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
-    let image = cli.image.positional.or(cli.image.option)
-        .expect( "the cli logic must ensure that the file argument is provided either as a positional or as an option");
+    let image = cli.image;
     if !image.exists() {
         bail!("could not open input file at {}", image.display());
     }
 
-    let output = cli.output_file.unwrap_or(PathBuf::from(&cli.extract));
+    let output = if cli.destination.is_dir() {
+        let source = PathBuf::from(&cli.source);
+        let source_file = source.file_name().context("invalid source file name")?;
+        cli.destination.join(source_file)
+    } else {
+        cli.destination
+    };
     let mut output = File::create(output).context("could not create output file")?;
 
-    if cli.udf {
-        udf_extract(image, cli.extract, &mut output)?;
-    } else {
-        iso9660_extract(image, cli.extract, &mut output)?;
-    }
+    let iso_err = match Iso::new(image.clone()) {
+        Ok(iso) => return iso9660_extract(&iso, cli.source, &mut output),
+        Err(err) => err,
+    };
 
-    Ok(())
+    match Udf::new(image) {
+        Ok(udf) => udf_extract(&udf, cli.source, &mut output),
+        Err(udf_err) => bail!(
+            "could not open file as ISO 9660 or UDF\n ISO error: {iso_err:?}\nUDF error: {udf_err:?}",
+        ),
+    }
 }
 
 /// Extract given file from a UDF image.
-fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()> {
-    let udf = Udf::new(image)?;
-    let entry = udf.entry(extract)?;
+fn udf_extract(udf: &Udf, source: String, output: &mut File) -> Result<()> {
+    let entry = udf.entry(source)?;
+    if entry.is_dir() {
+        bail!("copying directories is currently not supported");
+    }
 
     io::copy(&mut entry.reader(), output)?;
 
@@ -60,9 +71,11 @@ fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()>
 }
 
 /// Extract given file from an ISO 9660 image.
-fn iso9660_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()> {
-    let iso = Iso::new(image.clone())?;
-    let entry = iso.entry(extract)?;
+fn iso9660_extract(iso: &Iso, source: String, output: &mut File) -> Result<()> {
+    let entry = iso.entry(source)?;
+    if entry.is_dir() {
+        bail!("copying directories is currently not supported");
+    }
 
     io::copy(&mut entry.reader(), output)?;
 

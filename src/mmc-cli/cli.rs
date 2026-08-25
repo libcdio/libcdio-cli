@@ -59,3 +59,15 @@ pub struct MmcActions {
     #[arg(short = 'S', long)]
     pub speed: Option<u16>,
 }
+
+#[cfg(test)]
+mod tests {
+    use clap::CommandFactory;
+
+    use super::*;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
+}
