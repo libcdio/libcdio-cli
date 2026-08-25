@@ -44,11 +44,7 @@ fn main() -> Result<()> {
 
     if cli.metadata {
         let iso = Iso::new(file.clone())?;
-        print_iso9660_metadata(&iso, &file, &mut output)
-            .context("io error while printing iso9660 metadata")?;
-        print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
-
-        return Ok(());
+        return print_iso9660_metadata(&iso, &file, &mut output).map_err(Into::into);
     }
 
     let Err(udf_err) = print_udf_contents(file.clone(), &mut output) else {
@@ -81,6 +77,13 @@ fn print_iso9660_metadata(
     write_if_some("System     ", iso.system())?;
     write_if_some("Volume     ", iso.volume())?;
     write_if_some("Volume Set ", iso.volume_set())?;
+
+    let joliet_level = iso.joliet_level().map(|j| format!("Level {}", u8::from(j)));
+    writeln!(
+        out,
+        "Joliet      : {}",
+        joliet_level.as_deref().unwrap_or("no")
+    )?;
 
     Ok(())
 }
@@ -244,12 +247,4 @@ fn print_udf_contents(path: PathBuf, out: &mut dyn io::Write) -> Result<()> {
     }
 
     Ok(())
-}
-
-fn print_joliet_level(iso: &Iso, mut out: impl io::Write) -> Result<(), io::Error> {
-    let Some(joliet_level) = iso.joliet_level() else {
-        return writeln!(out, "No Joliet extensions");
-    };
-
-    writeln!(out, "Joliet Level: {}", u8::from(joliet_level))
 }

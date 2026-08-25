@@ -11,7 +11,7 @@ Preparer    : K3b - Version 0.11.20
 Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : Rock Ridge Copy test
-No Joliet extensions
+Joliet      : no
 ";
 #[test]
 fn rock_metadata() {
@@ -30,7 +30,7 @@ Preparer    : K3b - Version 0.11.12
 Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : K3b data project
-Joliet Level: 3
+Joliet      : Level 3
 ";
 #[test]
 fn joliet_metadata() {
@@ -47,7 +47,7 @@ static XA_METADATA: &str = r"Image       : tests/data/xa.iso
 Application : GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (C) 1997-2006 J.PEARSON/J.SCHILLING (C) 2006-2007 CDRKIT TEAM
 System      : LINUX
 Volume      : CDROM
-No Joliet extensions
+Joliet      : no
 ";
 #[test]
 fn xa_metadata() {
