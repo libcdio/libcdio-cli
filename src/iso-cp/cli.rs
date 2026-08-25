@@ -27,9 +27,9 @@ pub struct Cli {
     #[arg(value_name = "IMAGE")]
     pub image: PathBuf,
 
-    /// Path to the file in the image to extract
-    #[arg(short, long, value_name = "FILE")]
-    pub extract: String,
+    /// Path to a source file in the image.
+    #[arg(value_name = "SOURCE")]
+    pub source: String,
 
     /// Path of the output file. Defaults to name of the extracted file.
     #[arg(short, long, value_name = "FILE")]

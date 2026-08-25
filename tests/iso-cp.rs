@@ -12,9 +12,8 @@ static UDF_FILE: &str = "tests/data/udf1.iso";
 fn extract_udf() {
     let output = NamedTempFile::new("out").unwrap();
     cmd()
-        .arg("-e")
-        .arg("licenses/COPYING")
         .arg(UDF_FILE)
+        .arg("licenses/COPYING")
         .arg("-o")
         .arg(output.path())
         .arg("-U")
@@ -30,9 +29,8 @@ static ISO9660_FILE: &str = "tests/data/xa.iso";
 fn extract_iso9660() {
     let output = NamedTempFile::new("out").unwrap();
     cmd()
-        .arg("-e")
-        .arg("copying")
         .arg(ISO9660_FILE)
+        .arg("copying")
         .arg("-o")
         .arg(output.path())
         .assert()

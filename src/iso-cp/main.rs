@@ -36,22 +36,22 @@ fn main() -> Result<()> {
         bail!("could not open input file at {}", image.display());
     }
 
-    let output = cli.output_file.unwrap_or(PathBuf::from(&cli.extract));
+    let output = cli.output_file.unwrap_or(PathBuf::from(&cli.source));
     let mut output = File::create(output).context("could not create output file")?;
 
     if cli.udf {
-        udf_extract(image, cli.extract, &mut output)?;
+        udf_extract(image, cli.source, &mut output)?;
     } else {
-        iso9660_extract(image, cli.extract, &mut output)?;
+        iso9660_extract(image, cli.source, &mut output)?;
     }
 
     Ok(())
 }
 
 /// Extract given file from a UDF image.
-fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()> {
+fn udf_extract(image: PathBuf, source: String, output: &mut File) -> Result<()> {
     let udf = Udf::new(image)?;
-    let entry = udf.entry(extract)?;
+    let entry = udf.entry(source)?;
 
     io::copy(&mut entry.reader(), output)?;
 
@@ -59,9 +59,9 @@ fn udf_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()>
 }
 
 /// Extract given file from an ISO 9660 image.
-fn iso9660_extract(image: PathBuf, extract: String, output: &mut File) -> Result<()> {
+fn iso9660_extract(image: PathBuf, source: String, output: &mut File) -> Result<()> {
     let iso = Iso::new(image.clone())?;
-    let entry = iso.entry(extract)?;
+    let entry = iso.entry(source)?;
 
     io::copy(&mut entry.reader(), output)?;
 
