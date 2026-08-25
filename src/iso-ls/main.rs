@@ -45,10 +45,7 @@ fn main() -> Result<()> {
     } else {
         &mut io::stdout()
     };
-    let file = cli.file.positional.or(cli.file.option).expect(
-        "the cli logic must ensure that the file argument is provided either as a positional or as an option",
-    );
-
+    let file = cli.image;
     if cli.udf {
         return print_udf_contents(file, &mut output);
     }
