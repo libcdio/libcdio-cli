@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
-use std::{fs::File, io};
+use std::{fs::File, io, path::PathBuf};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
@@ -36,7 +36,13 @@ fn main() -> Result<()> {
         bail!("could not open input file at {}", image.display());
     }
 
-    let output = cli.destination;
+    let output = if cli.destination.is_dir() {
+        let source = PathBuf::from(&cli.source);
+        let source_file = source.file_name().context("invalid source file name")?;
+        cli.destination.join(source_file)
+    } else {
+        cli.destination
+    };
     let mut output = File::create(output).context("could not create output file")?;
 
     let iso_err = match Iso::new(image.clone()) {
