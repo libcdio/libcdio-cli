@@ -66,7 +66,7 @@ fn main() -> Result<()> {
     print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
 
     if cli.iso9660 {
-        print_iso9660_contents(&iso, &mut output, !cli.no_rock_ridge, !cli.no_xa)
+        print_iso9660_contents(&iso, &mut output, !cli.no_xa)
             .context("error printing iso9660 contents")?;
     }
 
@@ -108,12 +108,7 @@ fn print_rock_ridge(
 }
 
 /// Outputs the file contents of the ISO 9660 image in an ls-like listing format.
-fn print_iso9660_contents(
-    iso: &Iso,
-    mut out: impl io::Write,
-    use_rock_ridge: bool,
-    use_xa: bool,
-) -> Result<()> {
+fn print_iso9660_contents(iso: &Iso, mut out: impl io::Write, use_xa: bool) -> Result<()> {
     const ISO9660_DEPTH_LIMIT: usize = 512;
     let mut dirs = VecDeque::new();
     dirs.push_back(("/".to_owned(), 0)); // (path, depth)
@@ -129,7 +124,7 @@ fn print_iso9660_contents(
         writeln!(out, "{}:", dir_path)?;
 
         for entry in iso.read_dir(dir_path.clone())? {
-            let rock_ridge = use_rock_ridge.then_some(entry.rock_ridge()).flatten();
+            let rock_ridge = entry.rock_ridge();
             let entry_name = if rock_ridge.is_none() {
                 entry.filename()?
             } else {

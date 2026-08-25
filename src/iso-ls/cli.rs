@@ -31,10 +31,6 @@ pub struct Cli {
     #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
 
-    /// Do not use Rock Ridge extensions
-    #[arg(long)]
-    pub no_rock_ridge: bool,
-
     /// Do not use CD-ROM XA extensions
     #[arg(long)]
     pub no_xa: bool,
