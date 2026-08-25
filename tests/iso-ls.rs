@@ -5,18 +5,19 @@ fn cmd() -> Command {
 }
 
 static ROCK_RIDGE_FILE: &str = "tests/data/rock-ridge.iso";
-static ROCK_METADATA: &str = r"__________________________________
-ISO 9660 image: tests/data/rock-ridge.iso
+static ROCK_METADATA: &str = r"Image       : tests/data/rock-ridge.iso
 Application : K3B THE CD KREATOR VERSION 0.11.20 (C) 2003 SEBASTIAN TRUEG AND THE K3B TEAM
 Preparer    : K3b - Version 0.11.20
 Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : Rock Ridge Copy test
-No Joliet extensions
+Joliet      : no
+Rock Ridge  : yes
 ";
 #[test]
 fn rock_metadata() {
     cmd()
+        .arg("-m")
         .arg(ROCK_RIDGE_FILE)
         .assert()
         .success()
@@ -24,18 +25,19 @@ fn rock_metadata() {
 }
 
 static JOLIET_FILE: &str = "tests/data/joliet.iso";
-static JOLIET_METADATA: &str = r"__________________________________
-ISO 9660 image: tests/data/joliet.iso
+static JOLIET_METADATA: &str = r"Image       : tests/data/joliet.iso
 Application : K3B THE CD KREATOR VERSION 0.11.12 (C) 2003 SEBASTIAN TRUEG AND THE K3B TEAM
 Preparer    : K3b - Version 0.11.12
 Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : K3b data project
-Joliet Level: 3
+Joliet      : Level 3
+Rock Ridge  : no
 ";
 #[test]
 fn joliet_metadata() {
     cmd()
+        .arg("-m")
         .arg(JOLIET_FILE)
         .assert()
         .success()
@@ -43,21 +45,24 @@ fn joliet_metadata() {
 }
 
 static XA_FILE: &str = "tests/data/xa.iso";
-static XA_METADATA: &str = r"__________________________________
-ISO 9660 image: tests/data/xa.iso
+static XA_METADATA: &str = r"Image       : tests/data/xa.iso
 Application : GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (C) 1997-2006 J.PEARSON/J.SCHILLING (C) 2006-2007 CDRKIT TEAM
 System      : LINUX
 Volume      : CDROM
-No Joliet extensions
+Joliet      : no
+Rock Ridge  : no
 ";
 #[test]
 fn xa_metadata() {
-    cmd().arg(XA_FILE).assert().success().stdout(XA_METADATA);
+    cmd()
+        .arg("-m")
+        .arg(XA_FILE)
+        .assert()
+        .success()
+        .stdout(XA_METADATA);
 }
 
-static ROCK_CONTENTS: &str = r"__________________________________
-ISO-9660 Information
-/:
+static ROCK_CONTENTS: &str = r"/:
   dr-xr-xr-x   4 0 0 [LSN     23]      2048 Oct 22 2004 02:21:14 .
   dr-xr-xr-x   2 0 0 [LSN     23]      2048 Oct 22 2004 02:21:14 ..
   dr-xr-xr-x   2 0 0 [LSN     24]      2048 Mar 05 2005 16:12:25 copy
@@ -82,16 +87,13 @@ ISO-9660 Information
 fn rock_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(ROCK_RIDGE_FILE)
         .assert()
         .success()
-        .stdout(ROCK_METADATA.to_owned() + ROCK_CONTENTS);
+        .stdout(ROCK_CONTENTS);
 }
 
-static JOLIET_CONTENTS: &str = r"__________________________________
-ISO-9660 Information
-/:
+static JOLIET_CONTENTS: &str = r"/:
   d [LSN     31]      2048 Oct 22 2004 22:44:59 .
   d [LSN     31]      2048 Oct 22 2004 22:44:59 ..
   d [LSN     32]      2048 Oct 22 2004 22:44:59 libcdio
@@ -114,16 +116,13 @@ ISO-9660 Information
 fn joliet_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(JOLIET_FILE)
         .assert()
         .success()
-        .stdout(JOLIET_METADATA.to_owned() + JOLIET_CONTENTS);
+        .stdout(JOLIET_CONTENTS);
 }
 
-static XA_CONTENTS: &str = r"__________________________________
-ISO-9660 Information
-/:
+static XA_CONTENTS: &str = r"/:
   d---1xrxrxr 1000 3000 [fn 00] [LSN     23]      2048 Jun 08 2026 04:44:35 .
   d---1xrxrxr 1000 3000 [fn 00] [LSN     23]      2048 Jun 08 2026 04:44:35 ..
   ----1--xr-- 1000 3000 [fn 00] [LSN     25]     35149 Jun 08 2026 04:43:19 copying
@@ -133,11 +132,10 @@ ISO-9660 Information
 fn xa_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(XA_FILE)
         .assert()
         .success()
-        .stdout(XA_METADATA.to_owned() + XA_CONTENTS);
+        .stdout(XA_CONTENTS);
 }
 
 static UDF_FILE: &str = "tests/data/udf.iso";
@@ -150,7 +148,6 @@ static UDF_OUTPUT: &str = "/:
 fn udf() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-U")
         .arg(UDF_FILE)
         .assert()
         .success()

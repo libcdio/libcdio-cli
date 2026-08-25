@@ -40,6 +40,49 @@ Copying whole directories is currently not supported.
   cargo install libcdio-cli
   ```
 
+## iso-ls
+Lists files of an ISO 9660 or UDF filesystem.
+```console
+$ iso-ls -h
+Inspect metadata and list contents of ISO 9660 and UDF files
+
+Usage: iso-ls [OPTIONS] <IMAGE>
+
+Arguments:
+  <IMAGE>  Path to an ISO 9660 or UDF image
+
+Options:
+  -m, --metadata  Print image metadata
+  -h, --help      Print help (see more with '--help')
+  -V, --version   Print version
+```
+
+Listing the contents of a UDF filesystem:
+```console
+$ iso-ls tests/data/udf1.iso
+/:
+  dr-xr-xr-x 2000 3000   2        88 Jun 19 2026 20:42:57 .
+  dr-xr-xr-x 2000 3000   1       144 Jun 19 2026 20:42:57 licenses
+
+/licenses/:
+  dr-xr-xr-x 2000 3000   2        88 Jun 19 2026 20:42:57 .
+  -r--r--r-- 2000 3000   1     35149 Jun 19 2026 20:41:12 COPYING
+  -r--r--r-- 2000 3000   1      7652 Jun 19 2026 20:41:16 COPYING.LESSER
+```
+
+Listing the image metadata of an ISO 9660 filesystem:
+```console
+$ iso-ls -m tests/data/joliet.iso
+Image       : tests/data/joliet.iso
+Application : K3B THE CD KREATOR VERSION 0.11.12 (C) 2003 SEBASTIAN TRUEG AND THE K3B TEAM
+Preparer    : K3b - Version 0.11.12
+Publisher   : Rocky Bernstein
+System      : LINUX
+Volume      : K3b data project
+Joliet      : Level 3
+Rock Ridge  : no
+```
+
 ## Development
 ### Use the provided Git Hooks
 These are set to perform lint and formatting checks before every

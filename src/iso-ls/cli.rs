@@ -17,52 +17,19 @@
 
 use std::path::PathBuf;
 
-use clap::{Args, Parser};
+use clap::Parser;
 
 /// Inspect metadata and list contents of ISO 9660 and UDF files.
 #[derive(Parser)]
 #[command(arg_required_else_help = true, long_about = libcdio_cli::HEADER, version)]
 pub struct Cli {
-    /// The file argument as an option or a positional argument
-    #[command(flatten)]
-    pub file: FileArg,
+    /// Path to an ISO 9660 or UDF image.
+    #[arg(value_name = "IMAGE")]
+    pub image: PathBuf,
 
-    /// Show contents of ISO9660 image in long listing format
-    #[arg(short = 'l', long, group = "listing")]
-    pub iso9660: bool,
-
-    /// Do not use Rock Ridge extensions
-    #[arg(long)]
-    pub no_rock_ridge: bool,
-
-    /// Do not use CD-ROM XA extensions
-    #[arg(long)]
-    pub no_xa: bool,
-
-    /// Check if the image uses Rock Ridge extensions by considering a maximum
-    /// of FILE_COUNT files. Provide '0' to check all files.
-    #[arg(short = 'r', long, value_name = "FILE_COUNT")]
-    pub show_rock_ridge: Option<u64>,
-
-    /// Produce only error outputs.
+    /// Print image metadata.
     #[arg(short, long)]
-    pub quiet: bool,
-
-    /// Show contents of UDF image in long listing format
-    #[arg(short = 'U', long, group = "listing")]
-    pub udf: bool,
-}
-
-#[derive(Args)]
-#[group(required = true, multiple = false)]
-pub struct FileArg {
-    /// Path to an ISO9660 and/or UDF image
-    #[arg(short = 'i', long = "input", value_name = "FILE")]
-    pub option: Option<PathBuf>,
-
-    /// Path to an ISO9660 and/or UDF image
-    #[arg(value_name = "FILE")]
-    pub positional: Option<PathBuf>,
+    pub metadata: bool,
 }
 
 #[cfg(test)]
