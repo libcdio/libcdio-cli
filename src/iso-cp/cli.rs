@@ -34,10 +34,6 @@ pub struct Cli {
     /// Path to a destination file or directory.
     #[arg(value_name = "DESTINATION")]
     pub destination: PathBuf,
-
-    /// Use UDF
-    #[arg(short = 'U', long)]
-    pub udf: bool,
 }
 
 #[cfg(test)]

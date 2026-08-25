@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with libcdio-cli. If not, see <https://www.gnu.org/licenses/>.
 
-use std::{fs::File, io, path::PathBuf};
+use std::{fs::File, io};
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
@@ -39,18 +39,21 @@ fn main() -> Result<()> {
     let output = cli.destination;
     let mut output = File::create(output).context("could not create output file")?;
 
-    if cli.udf {
-        udf_extract(image, cli.source, &mut output)?;
-    } else {
-        iso9660_extract(image, cli.source, &mut output)?;
-    }
+    let iso_err = match Iso::new(image.clone()) {
+        Ok(iso) => return iso9660_extract(&iso, cli.source, &mut output),
+        Err(err) => err,
+    };
 
-    Ok(())
+    match Udf::new(image) {
+        Ok(udf) => udf_extract(&udf, cli.source, &mut output),
+        Err(udf_err) => bail!(
+            "could not open file as ISO 9660 or UDF\n ISO error: {iso_err:?}\nUDF error: {udf_err:?}",
+        ),
+    }
 }
 
 /// Extract given file from a UDF image.
-fn udf_extract(image: PathBuf, source: String, output: &mut File) -> Result<()> {
-    let udf = Udf::new(image)?;
+fn udf_extract(udf: &Udf, source: String, output: &mut File) -> Result<()> {
     let entry = udf.entry(source)?;
 
     io::copy(&mut entry.reader(), output)?;
@@ -59,8 +62,7 @@ fn udf_extract(image: PathBuf, source: String, output: &mut File) -> Result<()> 
 }
 
 /// Extract given file from an ISO 9660 image.
-fn iso9660_extract(image: PathBuf, source: String, output: &mut File) -> Result<()> {
-    let iso = Iso::new(image.clone())?;
+fn iso9660_extract(iso: &Iso, source: String, output: &mut File) -> Result<()> {
     let entry = iso.entry(source)?;
 
     io::copy(&mut entry.reader(), output)?;

@@ -15,7 +15,6 @@ fn extract_udf() {
         .arg(UDF_FILE)
         .arg("licenses/COPYING")
         .arg(output.path())
-        .arg("-U")
         .assert()
         .success();
 
