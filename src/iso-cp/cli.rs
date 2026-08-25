@@ -51,3 +51,15 @@ pub struct FileArg {
     #[arg(value_name = "FILE")]
     pub positional: Option<PathBuf>,
 }
+
+#[cfg(test)]
+mod tests {
+    use clap::CommandFactory;
+
+    use super::*;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
+}

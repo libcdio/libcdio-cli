@@ -39,3 +39,15 @@ pub struct DriveArg {
     #[arg(value_name = "DRIVE")]
     pub positional: Option<PathBuf>,
 }
+
+#[cfg(test)]
+mod tests {
+    use clap::CommandFactory;
+
+    use super::*;
+
+    #[test]
+    fn verify_cli() {
+        Cli::command().debug_assert();
+    }
+}
