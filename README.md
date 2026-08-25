@@ -1,11 +1,180 @@
 # libcdio-cli
 Utilities to work with CD/DVD media, ISO 9660 and UDF images.
-| Program    | Description                                                  |
-|------------|--------------------------------------------------------------|
-| drive-info | Print drive information such as identifiers and capabilities |
-| iso-cp     | Copy files from an ISO 9660 or UDF filesystem.               |
-| iso-ls     | List files of ISO 9660 and UDF filesystems.                  |
-| mmc-cli    | Issue SCSI MMC commands to a drive.                          |
+| Program    | Description                                                    |
+|------------|----------------------------------------------------------------|
+| drive-info | Prints drive information such as identifiers and capabilities. |
+| iso-cp     | Copies files from ISO 9660 and UDF filesystems.                |
+| iso-ls     | Lists files of ISO 9660 and UDF filesystems.                   |
+| mmc-cli    | Issues SCSI MMC commands to a disc drive.                      |
+
+
+## Install
+- Install [Rust][rust-install].
+- Install [clang][bindgen-reqs].
+- Build and install from [crates.io][libcdio-cli-cratesio]:
+  ```shell
+  cargo install libcdio-cli
+  ```
+
+## drive-info
+Prints drive information such as identifiers and capabilities.
+```console
+$ drive-info -h
+Show information about a disc drive
+
+Usage: drive-info [OPTIONS] [DRIVE]
+
+Arguments:
+  [DRIVE]  Path to a disc drive
+
+Options:
+  -i, --input <DRIVE>  Path to a disc drive
+  -h, --help           Print help (see more with '--help')
+  -V, --version        Print version
+```
+
+<details>
+<summary>Example: Output from a Verbatim brand CD/DVD drive.</summary>
+
+```console
+$ drive-info
+Using drive /dev/cdrom
+Device information:
+   Vendor   : MATSHITA
+   Model    : DVD-RAM UJ8C0
+   Revision : SB02
+MMC information:
+   Supported features:
+      [*] Profile List:
+         [ ] DVD-RAM
+         [ ] DVD+R Double Layer
+         [ ] DVD+R
+         [ ] DVD+RW
+         [ ] DVD-RW Restricted Overwrite
+         [ ] DVD-RW Sequential Recording
+         [ ] DVD-R Dual Layer Jump Recording
+         [ ] DVD-R Dual Layer Sequential recording
+         [ ] DVD-R Sequential Recording
+         [ ] DVD-ROM
+         [ ] CD-RW
+         [ ] CD-R
+         [ ] CD-ROM
+         [ ] Removable disk
+      [*] Core:
+         + Interface: Serial ATAPI
+      [*] Morphing:
+         - Asynchronous events
+         + Operational change events
+      [*] Removable Medium:
+         + Eject
+         + Lock
+         + Prevent Jumper
+         + Loading Mechanism: Tray type
+      [ ] CD Read:
+         + C2 Errors
+         + CD-Text
+         - DAP
+      [ ] CD Audio External Play:
+         + SCAN
+         + Separate Channel Mute
+         + Separate Volume
+         + Volume Levels: 256
+      [ ] DVD-CSS:
+      [*] Drive Serial Number:
+         + S/N: HP61  188576
+Drive capabilities:
+   Hardware:
+      + Close Tray
+      + Eject
+      + Lock
+      + Multi Session
+      + Hard Reset
+   Read:
+      + Play Audio
+      + CD-DA
+      + CD-R
+      + CD-RW
+      + DVD-ROM
+      + C2 Errors
+      + Mode 2 Form 1 (VCD)
+      + Mode 2 Form 2 (VCD)
+      + MCN
+      + ISRC
+   Write:
+      + CD-R
+      + CD-RW
+      + DVD-R
+      + DVD-RAM
+
+Using drive /dev/sr0
+Device information:
+   Vendor   : MATSHITA
+   Model    : DVD-RAM UJ8C0
+   Revision : SB02
+MMC information:
+   Supported features:
+      [*] Profile List:
+         [ ] DVD-RAM
+         [ ] DVD+R Double Layer
+         [ ] DVD+R
+         [ ] DVD+RW
+         [ ] DVD-RW Restricted Overwrite
+         [ ] DVD-RW Sequential Recording
+         [ ] DVD-R Dual Layer Jump Recording
+         [ ] DVD-R Dual Layer Sequential recording
+         [ ] DVD-R Sequential Recording
+         [ ] DVD-ROM
+         [ ] CD-RW
+         [ ] CD-R
+         [ ] CD-ROM
+         [ ] Removable disk
+      [*] Core:
+         + Interface: Serial ATAPI
+      [*] Morphing:
+         - Asynchronous events
+         + Operational change events
+      [*] Removable Medium:
+         + Eject
+         + Lock
+         + Prevent Jumper
+         + Loading Mechanism: Tray type
+      [ ] CD Read:
+         + C2 Errors
+         + CD-Text
+         - DAP
+      [ ] CD Audio External Play:
+         + SCAN
+         + Separate Channel Mute
+         + Separate Volume
+         + Volume Levels: 256
+      [ ] DVD-CSS:
+      [*] Drive Serial Number:
+         + S/N: HP61  188576
+Drive capabilities:
+   Hardware:
+      + Close Tray
+      + Eject
+      + Lock
+      + Multi Session
+      + Hard Reset
+   Read:
+      + Play Audio
+      + CD-DA
+      + CD-R
+      + CD-RW
+      + DVD-ROM
+      + C2 Errors
+      + Mode 2 Form 1 (VCD)
+      + Mode 2 Form 2 (VCD)
+      + MCN
+      + ISRC
+   Write:
+      + CD-R
+      + CD-RW
+      + DVD-R
+      + DVD-RAM
+```
+</details>
 
 ## iso-cp
 Copies files from ISO 9660 or UDF filesystem.
@@ -23,22 +192,20 @@ Arguments:
 Options:
   -h, --help     Print help (see more with '--help')
   -V, --version  Print version
-$ # Copying a license file from a UDF filesystem
+```
+
+<details>
+<summary>Example: Copying a file from a UDF filesystem:</summary>
+
+```console
 $ iso-cp tests/data/udf1.iso licenses/COPYING.LESSER ./lgpl
 $ cat lgpl | head -2
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 ```
+</details>
 
 Copying whole directories is currently not supported.
-
-## Install
-- Install [Rust][rust-install].
-- Install [clang][bindgen-reqs].
-- Build and install from [crates.io][libcdio-cli-cratesio]:
-  ```shell
-  cargo install libcdio-cli
-  ```
 
 ## iso-ls
 Lists files of an ISO 9660 or UDF filesystem.
@@ -57,7 +224,9 @@ Options:
   -V, --version   Print version
 ```
 
-Listing the contents of a UDF filesystem:
+<details>
+<summary>Example: Listing the contents of a UDF filesystem:</summary>
+
 ```console
 $ iso-ls tests/data/udf1.iso
 /:
@@ -69,8 +238,11 @@ $ iso-ls tests/data/udf1.iso
   -r--r--r-- 2000 3000   1     35149 Jun 19 2026 20:41:12 COPYING
   -r--r--r-- 2000 3000   1      7652 Jun 19 2026 20:41:16 COPYING.LESSER
 ```
+</details>
 
-Listing the image metadata of an ISO 9660 filesystem:
+<details>
+<summary>Example: Listing the image metadata of an ISO 9660 filesystem:</summary>
+
 ```console
 $ iso-ls -m tests/data/joliet.iso
 Image       : tests/data/joliet.iso
@@ -82,6 +254,39 @@ Volume      : K3b data project
 Joliet      : Level 3
 Rock Ridge  : no
 ```
+</details>
+
+## mmc-cli
+Issues SCSI MMC commands to a disc drive.
+```console
+$ mmc-cli -h
+Usage: mmc-cli <--eject|--close-tray|--standby|--mcn|--inquiry|--speed <SPEED>> [DEVICE]
+
+Arguments:
+  [DEVICE]  Path to an MMC device
+
+Options:
+  -e, --eject          Eject the drive
+  -c, --close-tray     Close the tray, if present
+  -s, --standby        Put the device into standby
+  -m, --mcn            Get the MCN (Media Catalog Number) of the media
+  -i, --inquiry        Get hardware identifiers (Product, Vendor and Revision)
+  -S, --speed <SPEED>  Set the drive read and write speed in KB/s
+  -h, --help           Print help (see more with '--help')
+  -V, --version        Print version
+```
+
+<details>
+<summary>Example: Get hardware identifiers of a drive:</summary>
+
+```console
+$ mmc-cli -i
+Product: DVD-RAM UJ8C0
+Vendor: MATSHITA
+Revision: SB02
+```
+</details>
+
 
 ## Development
 ### Use the provided Git Hooks
