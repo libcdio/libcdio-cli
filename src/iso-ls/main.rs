@@ -33,7 +33,6 @@ use crate::cli::Cli;
 
 const DATE_FMT: &[BorrowedFormatItem] =
     format_description!("[month repr:short] [day] [year] [hour]:[minute]:[second]");
-static LINE: &str = "__________________________________";
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -75,8 +74,7 @@ fn print_iso9660_metadata(
     path: &Path,
     mut out: impl io::Write,
 ) -> Result<(), io::Error> {
-    writeln!(out, "{LINE}")?;
-    writeln!(out, "ISO 9660 image: {}", path.display())?;
+    writeln!(out, "Image       : {}", path.display())?;
     let mut write_if_some = |key, val| {
         let Some(val) = val else { return Ok(()) };
         writeln!(out, "{key} : {val}")
@@ -96,9 +94,6 @@ fn print_iso9660_contents(iso: &Iso, mut out: impl io::Write) -> Result<()> {
     const ISO9660_DEPTH_LIMIT: usize = 512;
     let mut dirs = VecDeque::new();
     dirs.push_back(("/".to_owned(), 0)); // (path, depth)
-
-    writeln!(out, "{}", LINE)?;
-    writeln!(out, "ISO-9660 Information")?;
 
     while let Some((dir_path, depth)) = dirs.pop_front() {
         if depth == ISO9660_DEPTH_LIMIT {
