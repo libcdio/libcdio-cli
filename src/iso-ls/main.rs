@@ -56,14 +56,18 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    if cli.udf {
-        return print_udf_contents(file, &mut output);
+    let Err(udf_err) = print_udf_contents(file.clone(), &mut output) else {
+        return Ok(());
+    };
+
+    match Iso::new(file) {
+        Ok(iso) => {
+            print_iso9660_contents(&iso, &mut output).context("error printing iso9660 contents")
+        }
+        Err(iso_err) => bail!(
+            "could not open image as UDF or ISO 9660:\n udf error: {udf_err:?}\n iso error: {iso_err:?}",
+        ),
     }
-
-    let iso = Iso::new(file.clone())?;
-    print_iso9660_contents(&iso, &mut output).context("error printing iso9660 contents")?;
-
-    Ok(())
 }
 
 fn print_iso9660_metadata(

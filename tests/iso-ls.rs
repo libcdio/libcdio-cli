@@ -89,7 +89,6 @@ ISO-9660 Information
 fn rock_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(ROCK_RIDGE_FILE)
         .assert()
         .success()
@@ -121,7 +120,6 @@ ISO-9660 Information
 fn joliet_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(JOLIET_FILE)
         .assert()
         .success()
@@ -140,7 +138,6 @@ ISO-9660 Information
 fn xa_contents() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-l")
         .arg(XA_FILE)
         .assert()
         .success()
@@ -157,7 +154,6 @@ static UDF_OUTPUT: &str = "/:
 fn udf() {
     cmd()
         .env("TZ", "UTC")
-        .arg("-U")
         .arg(UDF_FILE)
         .assert()
         .success()

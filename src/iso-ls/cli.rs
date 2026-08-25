@@ -31,17 +31,9 @@ pub struct Cli {
     #[arg(short, long)]
     pub metadata: bool,
 
-    /// Show contents of ISO9660 image in long listing format
-    #[arg(short = 'l', long, group = "listing")]
-    pub iso9660: bool,
-
     /// Produce only error outputs.
     #[arg(short, long)]
     pub quiet: bool,
-
-    /// Show contents of UDF image in long listing format
-    #[arg(short = 'U', long, group = "listing")]
-    pub udf: bool,
 }
 
 #[cfg(test)]
