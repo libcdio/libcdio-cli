@@ -85,6 +85,10 @@ fn print_iso9660_metadata(
         joliet_level.as_deref().unwrap_or("no")
     )?;
 
+    if let Ok(r) = iso.have_rock_ridge(None) {
+        writeln!(out, "Rock Ridge  : {}", if r { "yes" } else { "no" })?;
+    };
+
     Ok(())
 }
 

@@ -12,6 +12,7 @@ Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : Rock Ridge Copy test
 Joliet      : no
+Rock Ridge  : yes
 ";
 #[test]
 fn rock_metadata() {
@@ -31,6 +32,7 @@ Publisher   : Rocky Bernstein
 System      : LINUX
 Volume      : K3b data project
 Joliet      : Level 3
+Rock Ridge  : no
 ";
 #[test]
 fn joliet_metadata() {
@@ -48,6 +50,7 @@ Application : GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (
 System      : LINUX
 Volume      : CDROM
 Joliet      : no
+Rock Ridge  : no
 ";
 #[test]
 fn xa_metadata() {
