@@ -46,19 +46,22 @@ fn main() -> Result<()> {
         &mut io::stdout()
     };
     let file = cli.image;
+
+    if cli.metadata {
+        let iso = Iso::new(file.clone())?;
+        print_iso9660_metadata(&iso, &file, &mut output)
+            .context("io error while printing iso9660 metadata")?;
+        print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
+
+        return Ok(());
+    }
+
     if cli.udf {
         return print_udf_contents(file, &mut output);
     }
 
     let iso = Iso::new(file.clone())?;
-    print_iso9660_metadata(&iso, &file, &mut output)
-        .context("io error while printing iso9660 metadata")?;
-
-    print_joliet_level(&iso, &mut output).context("io error while printing joliet level")?;
-
-    if cli.iso9660 {
-        print_iso9660_contents(&iso, &mut output).context("error printing iso9660 contents")?;
-    }
+    print_iso9660_contents(&iso, &mut output).context("error printing iso9660 contents")?;
 
     Ok(())
 }

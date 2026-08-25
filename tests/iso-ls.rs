@@ -17,6 +17,7 @@ No Joliet extensions
 #[test]
 fn rock_metadata() {
     cmd()
+        .arg("-m")
         .arg(ROCK_RIDGE_FILE)
         .assert()
         .success()
@@ -36,6 +37,7 @@ Joliet Level: 3
 #[test]
 fn joliet_metadata() {
     cmd()
+        .arg("-m")
         .arg(JOLIET_FILE)
         .assert()
         .success()
@@ -52,7 +54,12 @@ No Joliet extensions
 ";
 #[test]
 fn xa_metadata() {
-    cmd().arg(XA_FILE).assert().success().stdout(XA_METADATA);
+    cmd()
+        .arg("-m")
+        .arg(XA_FILE)
+        .assert()
+        .success()
+        .stdout(XA_METADATA);
 }
 
 static ROCK_CONTENTS: &str = r"__________________________________
@@ -86,7 +93,7 @@ fn rock_contents() {
         .arg(ROCK_RIDGE_FILE)
         .assert()
         .success()
-        .stdout(ROCK_METADATA.to_owned() + ROCK_CONTENTS);
+        .stdout(ROCK_CONTENTS);
 }
 
 static JOLIET_CONTENTS: &str = r"__________________________________
@@ -118,7 +125,7 @@ fn joliet_contents() {
         .arg(JOLIET_FILE)
         .assert()
         .success()
-        .stdout(JOLIET_METADATA.to_owned() + JOLIET_CONTENTS);
+        .stdout(JOLIET_CONTENTS);
 }
 
 static XA_CONTENTS: &str = r"__________________________________
@@ -137,7 +144,7 @@ fn xa_contents() {
         .arg(XA_FILE)
         .assert()
         .success()
-        .stdout(XA_METADATA.to_owned() + XA_CONTENTS);
+        .stdout(XA_CONTENTS);
 }
 
 static UDF_FILE: &str = "tests/data/udf.iso";

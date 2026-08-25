@@ -27,6 +27,10 @@ pub struct Cli {
     #[arg(value_name = "IMAGE")]
     pub image: PathBuf,
 
+    /// Print image metadata.
+    #[arg(short, long)]
+    pub metadata: bool,
+
     /// Show contents of ISO9660 image in long listing format
     #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
