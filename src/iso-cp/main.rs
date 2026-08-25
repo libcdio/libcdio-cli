@@ -61,6 +61,9 @@ fn main() -> Result<()> {
 /// Extract given file from a UDF image.
 fn udf_extract(udf: &Udf, source: String, output: &mut File) -> Result<()> {
     let entry = udf.entry(source)?;
+    if entry.is_dir() {
+        bail!("copying directories is currently not supported");
+    }
 
     io::copy(&mut entry.reader(), output)?;
 
@@ -70,6 +73,9 @@ fn udf_extract(udf: &Udf, source: String, output: &mut File) -> Result<()> {
 /// Extract given file from an ISO 9660 image.
 fn iso9660_extract(iso: &Iso, source: String, output: &mut File) -> Result<()> {
     let entry = iso.entry(source)?;
+    if entry.is_dir() {
+        bail!("copying directories is currently not supported");
+    }
 
     io::copy(&mut entry.reader(), output)?;
 

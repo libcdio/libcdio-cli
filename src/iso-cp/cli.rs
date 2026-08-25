@@ -28,6 +28,8 @@ pub struct Cli {
     pub image: PathBuf,
 
     /// Path to a source file in the image.
+    ///
+    /// Directories are currently not supported.
     #[arg(value_name = "SOURCE")]
     pub source: String,
 
