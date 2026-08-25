@@ -39,11 +39,7 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
-    let mut output: &mut dyn io::Write = if cli.quiet {
-        &mut io::sink()
-    } else {
-        &mut io::stdout()
-    };
+    let mut output = &mut io::stdout();
     let file = cli.image;
 
     if cli.metadata {

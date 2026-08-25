@@ -30,10 +30,6 @@ pub struct Cli {
     /// Print image metadata.
     #[arg(short, long)]
     pub metadata: bool,
-
-    /// Produce only error outputs.
-    #[arg(short, long)]
-    pub quiet: bool,
 }
 
 #[cfg(test)]
