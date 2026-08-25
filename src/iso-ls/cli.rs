@@ -31,10 +31,6 @@ pub struct Cli {
     #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
 
-    /// Do not use CD-ROM XA extensions
-    #[arg(long)]
-    pub no_xa: bool,
-
     /// Check if the image uses Rock Ridge extensions by considering a maximum
     /// of FILE_COUNT files. Provide '0' to check all files.
     #[arg(short = 'r', long, value_name = "FILE_COUNT")]
