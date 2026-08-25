@@ -7,6 +7,31 @@ Utilities to work with CD/DVD media, ISO 9660 and UDF images.
 | iso-ls     | List files of ISO 9660 and UDF filesystems.                  |
 | mmc-cli    | Issue SCSI MMC commands to a drive.                          |
 
+## iso-cp
+Copies files from ISO 9660 or UDF filesystem.
+```console
+$ iso-cp -h
+Copy files from an ISO 9660 or UDF filesystem
+
+Usage: iso-cp <IMAGE> <SOURCE> <DESTINATION>
+
+Arguments:
+  <IMAGE>        Path to an ISO 9660 or UDF image
+  <SOURCE>       Path to a source file in the image
+  <DESTINATION>  Path to a destination file or directory
+
+Options:
+  -h, --help     Print help (see more with '--help')
+  -V, --version  Print version
+$ # Copying a license file from a UDF filesystem
+$ iso-cp tests/data/udf1.iso licenses/COPYING.LESSER ./lgpl
+$ cat lgpl | head -2
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+```
+
+Copying whole directories is currently not supported.
+
 ## Install
 - Install [Rust][rust-install].
 - Install [clang][bindgen-reqs].
