@@ -31,11 +31,6 @@ pub struct Cli {
     #[arg(short = 'l', long, group = "listing")]
     pub iso9660: bool,
 
-    /// Check if the image uses Rock Ridge extensions by considering a maximum
-    /// of FILE_COUNT files. Provide '0' to check all files.
-    #[arg(short = 'r', long, value_name = "FILE_COUNT")]
-    pub show_rock_ridge: Option<u64>,
-
     /// Produce only error outputs.
     #[arg(short, long)]
     pub quiet: bool,
