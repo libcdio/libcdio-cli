@@ -19,7 +19,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-/// Extract files from ISO 9660 and UDF files.
+/// Copy files from an ISO 9660 or UDF filesystem.
 #[derive(Parser)]
 #[command(arg_required_else_help = true, version)]
 pub struct Cli {
