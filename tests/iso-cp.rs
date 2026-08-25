@@ -14,7 +14,6 @@ fn extract_udf() {
     cmd()
         .arg(UDF_FILE)
         .arg("licenses/COPYING")
-        .arg("-o")
         .arg(output.path())
         .arg("-U")
         .assert()
@@ -31,7 +30,6 @@ fn extract_iso9660() {
     cmd()
         .arg(ISO9660_FILE)
         .arg("copying")
-        .arg("-o")
         .arg(output.path())
         .assert()
         .success();

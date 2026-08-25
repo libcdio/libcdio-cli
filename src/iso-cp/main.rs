@@ -36,7 +36,7 @@ fn main() -> Result<()> {
         bail!("could not open input file at {}", image.display());
     }
 
-    let output = cli.output_file.unwrap_or(PathBuf::from(&cli.source));
+    let output = cli.destination;
     let mut output = File::create(output).context("could not create output file")?;
 
     if cli.udf {

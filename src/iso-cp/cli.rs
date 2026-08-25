@@ -31,9 +31,9 @@ pub struct Cli {
     #[arg(value_name = "SOURCE")]
     pub source: String,
 
-    /// Path of the output file. Defaults to name of the extracted file.
-    #[arg(short, long, value_name = "FILE")]
-    pub output_file: Option<PathBuf>,
+    /// Path to a destination file or directory.
+    #[arg(value_name = "DESTINATION")]
+    pub destination: PathBuf,
 
     /// Use UDF
     #[arg(short = 'U', long)]
