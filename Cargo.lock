@@ -449,7 +449,8 @@ dependencies = [
 [[package]]
 name = "libcdio-rs"
 version = "0.1.0"
-source = "git+https://github.com/libcdio/libcdio-rs#539bc8220335eaf1b4ba97e425030e8edcef3c2c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b2fa81550c870721c14628ef96d29ac47665ac3350fe8663d70ca3b95ae47e2"
 dependencies = [
  "bitflags",
  "displaydoc",
@@ -466,7 +467,8 @@ dependencies = [
 [[package]]
 name = "libcdio-sys"
 version = "3.0.0+2.4.0p2.0.2"
-source = "git+https://github.com/libcdio/libcdio-sys.git?rev=a232be6#a232be6d7d1898eaeaa9c1dedcecbcf3bfcced4e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3341bd0c18a38e2a02fe6645b375f007e8023672a59b0c50554954e97c46da3b"
 dependencies = [
  "bindgen",
  "cc",
@@ -968,9 +970,20 @@ version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "63e71662fa4b2a2c3a26f570f037eb95bb1f85397f3cd8076caed2f026a6d100"
 dependencies = [
- "log",
  "pin-project-lite",
+ "tracing-attributes",
  "tracing-core",
+]
+
+[[package]]
+name = "tracing-attributes"
+version = "0.1.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7490cfa5ec963746568740651ac6781f701c9c5ea257c58e057f3ba8cf69e8da"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
